@@ -1,0 +1,2 @@
+# MaskCat
+ Makes Hashcat Masks
