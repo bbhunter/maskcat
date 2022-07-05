@@ -106,11 +106,29 @@ func main() {
 			"}", "?s",
 			"~", "?s",
 		)
-		fmt.Println(replacer.Replace(scanner.Text()))
+		mask := replacer.Replace(scanner.Text())
+		fmt.Printf("%s:%d:%d\n", mask, len(scanner.Text()), TestComplexity(mask))
 	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
 	}
 
+}
+
+func TestComplexity(str string) int {
+	c := 0
+	if strings.Contains(str, "?u") {
+		c++
+	}
+	if strings.Contains(str, "?l") {
+		c++
+	}
+	if strings.Contains(str, "?d") {
+		c++
+	}
+	if strings.Contains(str, "?s") {
+		c++
+	}
+	return c
 }
