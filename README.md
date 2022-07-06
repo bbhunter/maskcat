@@ -1,5 +1,5 @@
 # MaskCat
- Makes Hashcat masks from stdin. Format is `PLAIN:LENGTH:COMPLEXITY`.
+ Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY`.
 
  ```
 $ echo 'ThisISaT3ST123!' | maskcat
