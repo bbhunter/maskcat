@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -87,6 +88,7 @@ func main() {
 		",", "?s",
 		"-", "?s",
 		".", "?s",
+		"'", "?s",
 		"/", "?s",
 		":", "?s",
 		";", "?s",
@@ -107,6 +109,11 @@ func main() {
 	)
 	for scanner.Scan() {
 		mask := replacer.Replace(scanner.Text())
+		// check to see if the mask contains invalid characters. if so pass
+		var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
+		if IsMask(mask) == false {
+			continue
+		}
 		fmt.Printf("%s:%d:%d\n", mask, len(scanner.Text()), TestComplexity(mask))
 	}
 
