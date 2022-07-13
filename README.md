@@ -38,3 +38,4 @@ $ head -n 100 cracked.lst | maskcat | cut -d ':' -f1 | sort | uniq -c | sort -rn
 ```
 go install -v github.com/jakewnuk/maskcat@latest
 ```
+See [maskcat](https://github.com/jakewnuk/maskcat), [matchmask](https://github.com/jakewnuk/matchmask), and [submask](https://github.com/jakewnuk/submask), and [920mPasswordMasks](https://github.com/jakewnuk/920mPasswordMasks)
