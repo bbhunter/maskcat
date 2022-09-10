@@ -112,7 +112,9 @@ func main() {
 	if len(os.Args) > 1 {
 
 		if len(os.Args) <= 2 {
-			fmt.Println("PRINT HELP TODO")
+			fmt.Println("OPTIONS: match sub")
+			fmt.Println("EXAMPLE: stdin | maskcat match masks.lst")
+			fmt.Println("EXAMPLE: stdin | maskcat sub tokens.lst")
 			fmt.Println(len(os.Args))
 			os.Exit(0)
 		}
