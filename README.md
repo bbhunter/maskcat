@@ -1,6 +1,12 @@
 # MaskCat
- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY`.
+Maskcat performs 3 functions:
+- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY`.
+- Matches words from stdin to Hashcat masks from a file argument.
+- Substitutes tokens in wordlists using Hashcat masks.
 
+<br/>
+
+### Making Hashcat Masks From STDIN:
  ```
 $ echo 'ThisISaT3ST123!' | maskcat
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s:15:4
@@ -34,8 +40,63 @@ $ head -n 100 cracked.lst | maskcat | cut -d ':' -f1 | sort | uniq -c | sort -rn
     4 ?u?l?l?l?l?l?l?l?d?d
     4 ?u?l?l?l?l?l?l?d?d
 ```
- Install
+
+### Matching Words From STDIN to Hashcat Masks From a File:
+ ```
+$ cat masks.txt
+?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s
+
+$ echo 'ThisISaT3ST123!' | matchmask masks.txt
+ThisISaT3ST123!
+ ```
+
+ ```
+$ cat masks.txt
+?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s
+?l?l?l?l
+
+$ cat words.txt
+ThisISaT3ST123!
+test
+bark
+tree
+Tree
+Bark
+NoMatch123
+
+$ cat words.txt | matchmask masks.txt
+ThisISaT3ST123!
+test
+bark
+tree
+
+```
+
+### Substituting Tokens in Wordlists with Hashcat Masks:
+
+```
+# get a list of probable tokens
+
+$ cat tokens.lst
+Keywrd
+
+# then take your favorite wordlist
+$ cat words.lst
+TheGreat123
+TheGreats123
+Thefats123
+Greaty12345!!
+
+# and sub matching masks with your token
+$ cat test.lst | submask tokens.lst
+TheKeywrd123
+Keywrds123
+Keywrd12345!!
+
+ ```
+
+### Install
 ```
 go install -v github.com/jakewnuk/maskcat@latest
 ```
-See [maskcat](https://github.com/jakewnuk/maskcat), [matchmask](https://github.com/jakewnuk/matchmask), and [submask](https://github.com/jakewnuk/submask), and [920mPasswordMasks](https://github.com/jakewnuk/920mPasswordMasks)
+See [maskcat](https://github.com/jakewnuk/maskcat) and [920mPasswordMasks](https://github.com/jakewnuk/920mPasswordMasks)
