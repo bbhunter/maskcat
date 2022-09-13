@@ -46,7 +46,7 @@ $ head -n 100 cracked.lst | maskcat | cut -d ':' -f1 | sort | uniq -c | sort -rn
 $ cat masks.txt
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s
 
-$ echo 'ThisISaT3ST123!' | matchmask masks.txt
+$ echo 'ThisISaT3ST123!' | maskcat match masks.txt
 ThisISaT3ST123!
  ```
 
@@ -64,7 +64,7 @@ Tree
 Bark
 NoMatch123
 
-$ cat words.txt | matchmask masks.txt
+$ cat words.txt | maskcat match masks.txt
 ThisISaT3ST123!
 test
 bark
@@ -88,7 +88,7 @@ Thefats123
 Greaty12345!!
 
 # and sub matching masks with your token
-$ cat test.lst | submask tokens.lst
+$ cat test.lst | maskcat sub tokens.lst
 TheKeywrd123
 Keywrds123
 Keywrd12345!!
