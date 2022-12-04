@@ -1,5 +1,8 @@
 package main
 
+// NOTE: There is currently no support for byte or multi-byte characters and the tool
+// is designed to fit the majority of masks found
+
 import (
 	"bufio"
 	"fmt"
@@ -222,7 +225,7 @@ func main() {
 			if IsMask(mask) == false {
 				continue
 			}
-			fmt.Printf("%s:%d:%d\n", mask, len(stdinscanner.Text()), TestComplexity(mask))
+			fmt.Printf("%s:%d:%d:%d\n", mask, len(stdinscanner.Text()), TestComplexity(mask), TestEntropy(mask))
 		}
 
 		if err := stdinscanner.Err(); err != nil {
@@ -245,6 +248,24 @@ func TestComplexity(str string) int {
 	}
 	if strings.Contains(str, "?s") {
 		c++
+	}
+	return c
+}
+
+// rough calc mask entropy
+func TestEntropy(str string) int {
+	c := 0
+	if strings.Contains(str, "?u") {
+		c += strings.Count(str, "?u") * 26
+	}
+	if strings.Contains(str, "?l") {
+		c += strings.Count(str, "?l") * 26
+	}
+	if strings.Contains(str, "?d") {
+		c += strings.Count(str, "?d") * 10
+	}
+	if strings.Contains(str, "?s") {
+		c += strings.Count(str, "?s") * 33
 	}
 	return c
 }

@@ -1,15 +1,17 @@
 # MaskCat
 Maskcat performs 3 functions:
-- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY`.
+- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from stdin to Hashcat masks from a file argument.
 - Substitutes tokens in wordlists using Hashcat masks.
+
+> NOTE: There is no support for `?b` or multi-byte characters at this time.
 
 <br/>
 
 ### Making Hashcat Masks From STDIN:
  ```
 $ echo 'ThisISaT3ST123!' | maskcat
-?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s:15:4
+?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s:15:4:333
  ```
 
  ```
