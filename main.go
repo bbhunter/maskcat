@@ -1,13 +1,12 @@
 package main
 
-// NOTE: There is currently no support for byte or multi-byte characters and the tool
-// is designed to fit the majority of masks found
-
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -115,36 +114,35 @@ func main() {
 	if len(os.Args) > 1 {
 
 		if len(os.Args) <= 2 {
-			fmt.Println("OPTIONS: match sub")
+			fmt.Println("OPTIONS: match sub mutate")
 			fmt.Println("EXAMPLE: stdin | maskcat match masks.lst")
 			fmt.Println("EXAMPLE: stdin | maskcat sub tokens.lst")
+			fmt.Println("EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>")
 			os.Exit(0)
 		}
-		infile := os.Args[2]
 
-		buf, err := os.Open(infile)
-		checkError(err)
+		if os.Args[1] == "match" {
+			infile := os.Args[2]
+			buf, err := os.Open(infile)
+			CheckError(err)
 
-		defer func() {
-			if err = buf.Close(); err != nil {
-				fmt.Println(err)
-				os.Exit(0)
-			}
-		}()
+			defer func() {
+				if err = buf.Close(); err != nil {
+					fmt.Println(err)
+					os.Exit(0)
+				}
+			}()
 
-		filescanner := bufio.NewScanner(buf)
-
-		if os.Args[1] == "match" || os.Args[1] == "m" {
+			filescanner := bufio.NewScanner(buf)
 			var masks []string
 
 			for filescanner.Scan() {
 				var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
 				if IsMask(filescanner.Text()) == false {
-					//fmt.Println("Input mask contains non-mask characters. Passing.")
+					fmt.Println("[SKIP] Input mask contains non-mask characters: ", filescanner.Text())
 					continue
 				}
 				masks = append(masks, filescanner.Text())
-
 			}
 
 			for stdinscanner.Scan() {
@@ -161,9 +159,21 @@ func main() {
 						fmt.Fprintln(os.Stderr, "reading standard input:", err)
 					}
 				}
-
 			}
-		} else if os.Args[1] == "sub" || os.Args[1] == "s" {
+
+		} else if os.Args[1] == "sub" {
+			infile := os.Args[2]
+			buf, err := os.Open(infile)
+			CheckError(err)
+
+			defer func() {
+				if err = buf.Close(); err != nil {
+					fmt.Println(err)
+					os.Exit(0)
+				}
+			}()
+
+			filescanner := bufio.NewScanner(buf)
 			var tokens []string
 
 			for filescanner.Scan() {
@@ -177,47 +187,54 @@ func main() {
 			}
 
 			for stdinscanner.Scan() {
+				stringword := stdinscanner.Text()
 				mask := replacer.Replace(stdinscanner.Text())
 
 				for _, value := range tokens {
-					tokenmask := replacer.Replace(value)
-					if strings.Contains(mask, tokenmask) {
+					newWord := ReplaceWord(stringword, mask, value, replacer)
 
-						// format mask token chars into sub chars
-						newword := strings.Replace(mask, tokenmask, value, -1)
-						newword = strings.Replace(newword, "?u", "?", -1)
-						newword = strings.Replace(newword, "?l", "?", -1)
-						newword = strings.Replace(newword, "?d", "?", -1)
-						newword = strings.Replace(newword, "?s", "?", -1)
-
-						// loop over the string and finish the sub
-						for i, c := range stdinscanner.Text() {
-							for x, y := range newword {
-								if string(y) == "?" && x == i {
-									newword = replaceAtIndex(newword, rune(c), i)
-									break
-								}
-							}
-
-						}
-						if strings.Contains(newword, value) {
-							if newword != value {
-								fmt.Println(newword)
-							}
-						}
-					}
-
-					if err := stdinscanner.Err(); err != nil {
-						fmt.Fprintln(os.Stderr, "reading standard input:", err)
+					if newWord != "" {
+						fmt.Println(newWord)
 					}
 				}
-
 			}
 
+		} else if os.Args[1] == "mutate" {
+			var tokens []string
+			var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
+
+			if IsInt(os.Args[2]) == false {
+				CheckError(errors.New("ERROR: Invalid Chunk Size"))
+			}
+
+			for stdinscanner.Scan() {
+				chunksInt, err := strconv.Atoi(os.Args[2])
+				CheckError(err)
+				chunks := ChunkString(stdinscanner.Text(), chunksInt)
+				var achunks []string
+				for _, ch := range chunks {
+					if len(ch) == chunksInt {
+						achunks = append(achunks, ch)
+					}
+				}
+				tokens = append(tokens, achunks...)
+				tokens = RemoveDuplicateStr(tokens)
+
+				stringword := stdinscanner.Text()
+				mask := replacer.Replace(stdinscanner.Text())
+
+				for _, value := range tokens {
+					newWord := ReplaceWord(stringword, mask, value, replacer)
+
+					if newWord != "" {
+						fmt.Println(newWord)
+					}
+				}
+			}
 		}
 
 	} else {
-
+		// else make masks like normal
 		for stdinscanner.Scan() {
 			mask := replacer.Replace(stdinscanner.Text())
 			// check to see if the mask contains invalid characters. if so pass
@@ -231,7 +248,6 @@ func main() {
 		if err := stdinscanner.Err(); err != nil {
 			fmt.Fprintln(os.Stderr, "reading standard input:", err)
 		}
-
 	}
 }
 
@@ -270,15 +286,81 @@ func TestEntropy(str string) int {
 	return c
 }
 
+// splits string into chunks
+func ChunkString(s string, chunkSize int) []string {
+	if len(s) == 0 {
+		return nil
+	}
+	if chunkSize >= len(s) {
+		return []string{s}
+	}
+	var chunks []string = make([]string, 0, (len(s)-1)/chunkSize+1)
+	currentLen := 0
+	currentStart := 0
+	for i := range s {
+		if currentLen == chunkSize {
+			chunks = append(chunks, s[currentStart:i])
+			currentLen = 0
+			currentStart = i
+		}
+		currentLen++
+	}
+	chunks = append(chunks, s[currentStart:])
+	return chunks
+}
+
+// Removes duplicate strings from array
+func RemoveDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
 // Replace rune at index in string
-func replaceAtIndex(in string, r rune, i int) string {
+func ReplaceAtIndex(in string, r rune, i int) string {
 	out := []rune(in)
 	out[i] = r
 	return string(out)
 }
 
+func ReplaceWord(stringword, mask string, value string, replacer *strings.Replacer) string {
+	tokenmask := replacer.Replace(value)
+	if strings.Contains(mask, tokenmask) {
+
+		// format mask token chars into sub chars
+		newword := strings.Replace(mask, tokenmask, value, -1)
+		newword = strings.Replace(newword, "?u", "?", -1)
+		newword = strings.Replace(newword, "?l", "?", -1)
+		newword = strings.Replace(newword, "?d", "?", -1)
+		newword = strings.Replace(newword, "?s", "?", -1)
+
+		// loop over the string and finish the sub
+		for i, c := range stringword {
+			for x, y := range newword {
+				if string(y) == "?" && x == i {
+					newword = ReplaceAtIndex(newword, rune(c), i)
+					break
+				}
+			}
+
+		}
+		if strings.Contains(newword, value) {
+			if newword != value {
+				return newword
+			}
+		}
+	}
+	return ""
+}
+
 // Error checking
-func checkError(err error) {
+func CheckError(err error) {
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		os.Exit(0)
