@@ -1,5 +1,5 @@
 # MaskCat
-Maskcat performs 3 functions:
+Maskcat performs 4 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from stdin to Hashcat masks from a file argument.
 - Substitutes tokens in wordlists using Hashcat masks.
