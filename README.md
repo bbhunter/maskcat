@@ -4,9 +4,9 @@ Maskcat
 
 Maskcat performs 4 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
-- Matches words from stdin to Hashcat masks from a file argument.
-- Substitutes tokens in wordlists using Hashcat masks.
-- Mutates STDIN using Hashcat masks to create new candidates.
+- Matches words from `stdin` to masks from a file argument.
+- Substitutes tokens in wordlists using masks.
+- Mutates `stdin` using masks to create new candidates.
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
