@@ -1,4 +1,5 @@
 # MaskCat
+
 Maskcat performs 4 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from stdin to Hashcat masks from a file argument.
@@ -7,9 +8,16 @@ Maskcat performs 4 functions:
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
-<br/>
+## Getting Started
 
-### Making Hashcat Masks From STDIN:
+- [Making Masks](#Making-Masks)
+- [Matching Words to Masks](#Matching-Words-to-Masks)
+- [Substituting Tokens in Words with Masks](#Substituting-Tokens-in-Words-with-Masks)
+- [Mutating Input](#Mutating-Input)
+- [Install](#install)
+
+## Making Masks:
+
  ```
 $ echo 'ThisISaT3ST123!' | maskcat
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s:15:4:333
@@ -44,7 +52,8 @@ $ head -n 100 cracked.lst | maskcat | cut -d ':' -f1 | sort | uniq -c | sort -rn
     4 ?u?l?l?l?l?l?l?d?d
 ```
 
-### Matching Words From STDIN to Hashcat Masks From a File:
+## Matching Words to Masks:
+
  ```
 $ cat masks.txt
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s
@@ -75,7 +84,7 @@ tree
 
 ```
 
-### Substituting Tokens in Wordlists with Hashcat Masks:
+## Substituting Tokens in Words with Masks:
 
 ```
 # get a list of probable tokens
@@ -98,9 +107,9 @@ Keywrd12345!!
 
  ```
 
-### Mutating Input from STDIN:
+## Mutating Input:
 
-#### How Does Mutation Work?
+### How Does Mutation Work?
 - Mutation takes input from STDIN then tokenizes it based on the parameter
   provided by length. Tokens are then checked for length against the provided
   parameter and valid values are added to an array. This array is then used in
@@ -134,4 +143,4 @@ ms.navit6
 ```
 go install -v github.com/jakewnuk/maskcat@latest
 ```
-See [maskcat](https://github.com/jakewnuk/maskcat) and [920mPasswordMasks](https://github.com/jakewnuk/920mPasswordMasks)
+
