@@ -1,4 +1,6 @@
-# MaskCat
+<h1 align="center">
+Maskcat
+ </h1>
 
 Maskcat performs 4 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
