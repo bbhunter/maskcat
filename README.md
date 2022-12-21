@@ -112,6 +112,7 @@ Keywrd12345!!
 ## Mutating Input:
 
 ### How Does Mutation Work?
+
 - Mutation takes input from STDIN then tokenizes it based on the parameter
   provided by length. Tokens are then checked for length against the provided
   parameter and valid values are added to an array. This array is then used in
