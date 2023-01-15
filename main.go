@@ -325,7 +325,12 @@ func RemoveDuplicateStr(strSlice []string) []string {
 // Replace rune at index in string
 func ReplaceAtIndex(in string, r rune, i int) string {
 	out := []rune(in)
-	out[i] = r
+	if len(out) == i {
+		i := i - 1
+		out[i] = r
+	} else {
+		out[i] = r
+	}
 	return string(out)
 }
 
