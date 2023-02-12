@@ -1,3 +1,5 @@
+// Package that contains all relevant code for maskcat
+// Note that ?b is not supported at this time
 package main
 
 import (
@@ -234,10 +236,9 @@ func main() {
 		}
 
 	} else {
-		// else make masks like normal
+		// else make masks
 		for stdinscanner.Scan() {
 			mask := replacer.Replace(stdinscanner.Text())
-			// check to see if the mask contains invalid characters. if so pass
 			var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
 			if IsMask(mask) == false {
 				continue
@@ -251,6 +252,7 @@ func main() {
 	}
 }
 
+// TestComplexity tests the complexity of an input string
 func TestComplexity(str string) int {
 	c := 0
 	if strings.Contains(str, "?u") {
@@ -268,7 +270,7 @@ func TestComplexity(str string) int {
 	return c
 }
 
-// rough calc mask entropy
+// TestEntropy calculates mask entropy
 func TestEntropy(str string) int {
 	c := 0
 	if strings.Contains(str, "?u") {
@@ -286,7 +288,7 @@ func TestEntropy(str string) int {
 	return c
 }
 
-// splits string into chunks
+// ChunkString splits string into chunks
 func ChunkString(s string, chunkSize int) []string {
 	if len(s) == 0 {
 		return nil
@@ -294,7 +296,7 @@ func ChunkString(s string, chunkSize int) []string {
 	if chunkSize >= len(s) {
 		return []string{s}
 	}
-	var chunks []string = make([]string, 0, (len(s)-1)/chunkSize+1)
+	var chunks = make([]string, 0, (len(s)-1)/chunkSize+1)
 	currentLen := 0
 	currentStart := 0
 	for i := range s {
@@ -309,7 +311,7 @@ func ChunkString(s string, chunkSize int) []string {
 	return chunks
 }
 
-// Removes duplicate strings from array
+// RemoveDuplicateStr removes duplicate strings from array
 func RemoveDuplicateStr(strSlice []string) []string {
 	allKeys := make(map[string]bool)
 	list := []string{}
@@ -322,18 +324,19 @@ func RemoveDuplicateStr(strSlice []string) []string {
 	return list
 }
 
-// Replace rune at index in string
+// ReplaceAtIndex replaces a rune at index in string
 func ReplaceAtIndex(in string, r rune, i int) string {
 	out := []rune(in)
 	if len(out) == i {
 		i := i - 1
 		out[i] = r
-	} else {
+	} else if i <= len(out) {
 		out[i] = r
 	}
 	return string(out)
 }
 
+// ReplaceWord replaces a mask within an input string with a value
 func ReplaceWord(stringword, mask string, value string, replacer *strings.Replacer) string {
 	tokenmask := replacer.Replace(value)
 	if strings.Contains(mask, tokenmask) {
@@ -364,7 +367,7 @@ func ReplaceWord(stringword, mask string, value string, replacer *strings.Replac
 	return ""
 }
 
-// Error checking
+// CheckError is a general error handler
 func CheckError(err error) {
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)
