@@ -10,6 +10,8 @@ Maskcat performs 4 functions:
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
+> For more examples: [link](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
+
 ## Getting Started
 
 - [Making Masks](#Making-Masks)
