@@ -16,13 +16,18 @@ Maskcat performs 6 functions:
 
 ## Getting Started
 
+- [Install](#install)
 - [Making Masks](#Making-Masks)
 - [Matching Words to Masks](#Matching-Words-to-Masks)
 - [Substituting Tokens in Words with Masks](#Substituting-Tokens-in-Words-with-Masks)
 - [Mutating Input](#Mutating-Input)
 - [Generating Tokens](#Generating-Tokens)
 - [Partial Masks](#Partial-Masks)
-- [Install](#install)
+
+### Install
+```
+go install -v github.com/jakewnuk/maskcat@latest
+```
 
 ## Making Masks:
 
@@ -181,10 +186,5 @@ NotAPassword?d?d?d
 $ cat list.tmp | go run . partial du
 ?uassword?d?d?d
 ?uot?u?uassword?d?d?d
-```
-
-### Install
-```
-go install -v github.com/jakewnuk/maskcat@latest
 ```
 
