@@ -158,6 +158,7 @@ ms.navit6
 ### How does it work?
 
 - Token generation replaces all digit and special characters within a string then filters for token length based on the provided input.
+- Spaces are preserved
 
 ```
 $ cat list.tmp
@@ -178,12 +179,12 @@ NotAPassword
 
 ```
 # Provide ulds as input and partial masks will be returned
-$ cat list.tmp | go run . partial d
+$ cat list.tmp | maskcat partial d
 Password?d?d?d
 NotAPassword?d?d?d
 
 # Multiple can also be used at once
-$ cat list.tmp | go run . partial du
+$ cat list.tmp | maskcat partial du
 ?uassword?d?d?d
 ?uot?u?uassword?d?d?d
 ```
