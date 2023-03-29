@@ -2,11 +2,13 @@
 Maskcat
  </h1>
 
-Maskcat performs 4 functions:
+Maskcat performs 6 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from `stdin` to masks from a file argument.
 - Substitutes tokens in wordlists using masks.
 - Mutates `stdin` using masks to create new candidates.
+- Generates tokens from `stdin` by removing non-alpha characters.
+- Partially replaces masks from `stdin` by selecting character sets.
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
@@ -18,6 +20,8 @@ Maskcat performs 4 functions:
 - [Matching Words to Masks](#Matching-Words-to-Masks)
 - [Substituting Tokens in Words with Masks](#Substituting-Tokens-in-Words-with-Masks)
 - [Mutating Input](#Mutating-Input)
+- [Generating Tokens](#Generating-Tokens)
+- [Partial Masks](#Partial-Masks)
 - [Install](#install)
 
 ## Making Masks:
@@ -142,6 +146,41 @@ mathismathise1
 ms.birdy8
 ms.litaf7
 ms.navit6
+```
+
+## Generating Tokens
+
+### How does it work?
+
+- Token generation replaces all digit and special characters within a string then filters for token length based on the provided input.
+
+```
+$ cat list.tmp
+Password123
+NotAPassword456
+
+# Fetches all 8 length strings
+$ echo 'Password123' | maskcat tokens 8
+Password
+
+# If value is above 99 all tokens are allowed
+$ echo 'Password123' | maskcat tokens 8
+Password
+NotAPassword
+```
+
+## Partial Masks
+
+```
+# Provide ulds as input and partial masks will be returned
+$ cat list.tmp | go run . partial d
+Password?d?d?d
+NotAPassword?d?d?d
+
+# Multiple can also be used at once
+$ cat list.tmp | go run . partial du
+?uassword?d?d?d
+?uot?u?uassword?d?d?d
 ```
 
 ### Install

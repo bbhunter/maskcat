@@ -7,6 +7,281 @@ import (
 	"strings"
 )
 
+// MakeMask performs substitution to make HC masks
+func MakeMask(str string) string {
+	replacer := strings.NewReplacer(
+		"a", "?l",
+		"b", "?l",
+		"c", "?l",
+		"d", "?l",
+		"e", "?l",
+		"f", "?l",
+		"g", "?l",
+		"h", "?l",
+		"i", "?l",
+		"j", "?l",
+		"k", "?l",
+		"l", "?l",
+		"m", "?l",
+		"n", "?l",
+		"o", "?l",
+		"p", "?l",
+		"q", "?l",
+		"r", "?l",
+		"s", "?l",
+		"t", "?l",
+		"u", "?l",
+		"v", "?l",
+		"w", "?l",
+		"x", "?l",
+		"y", "?l",
+		"z", "?l",
+		"A", "?u",
+		"B", "?u",
+		"C", "?u",
+		"D", "?u",
+		"E", "?u",
+		"F", "?u",
+		"G", "?u",
+		"H", "?u",
+		"I", "?u",
+		"J", "?u",
+		"K", "?u",
+		"L", "?u",
+		"M", "?u",
+		"N", "?u",
+		"O", "?u",
+		"P", "?u",
+		"Q", "?u",
+		"R", "?u",
+		"S", "?u",
+		"T", "?u",
+		"U", "?u",
+		"V", "?u",
+		"W", "?u",
+		"X", "?u",
+		"Y", "?u",
+		"Z", "?u",
+		"0", "?d",
+		"1", "?d",
+		"2", "?d",
+		"3", "?d",
+		"4", "?d",
+		"5", "?d",
+		"6", "?d",
+		"7", "?d",
+		"8", "?d",
+		"9", "?d",
+		" ", "?s",
+		"!", "?s",
+		"\"", "?s",
+		"#", "?s",
+		"$", "?s",
+		"%", "?s",
+		"&", "?s",
+		"\\", "?s",
+		"(", "?s",
+		")", "?s",
+		"*", "?s",
+		"+", "?s",
+		",", "?s",
+		"-", "?s",
+		".", "?s",
+		"'", "?s",
+		"/", "?s",
+		":", "?s",
+		";", "?s",
+		"<", "?s",
+		"=", "?s",
+		">", "?s",
+		"?", "?s",
+		"@", "?s",
+		"[", "?s",
+		"]", "?s",
+		"^", "?s",
+		"_", "?s",
+		"`", "?s",
+		"{", "?s",
+		"|", "?s",
+		"}", "?s",
+		"~", "?s",
+	)
+	return replacer.Replace(str)
+}
+
+// MakeToken replaces all non-alpha characters to generate tokens
+func MakeToken(str string) string {
+	replacer := strings.NewReplacer(
+		"0", "",
+		"1", "",
+		"2", "",
+		"3", "",
+		"4", "",
+		"5", "",
+		"6", "",
+		"7", "",
+		"8", "",
+		"9", "",
+		"!", "",
+		"\"", "",
+		"#", "",
+		"$", "",
+		"%", "",
+		"&", "",
+		"\\", "",
+		"(", "",
+		")", "",
+		"*", "",
+		"+", "",
+		",", "",
+		"-", "",
+		".", "",
+		"'", "",
+		"/", "",
+		":", "",
+		";", "",
+		"<", "",
+		"=", "",
+		">", "",
+		"?", "",
+		"@", "",
+		"[", "",
+		"]", "",
+		"^", "",
+		"_", "",
+		"`", "",
+		"{", "",
+		"|", "",
+		"}", "",
+		"~", "",
+	)
+	return replacer.Replace(str)
+}
+
+// MakePartialMask creates a
+func MakePartialMask(str string, chars string) string {
+	lowerReplacer := strings.NewReplacer(
+		"a", "?l",
+		"b", "?l",
+		"c", "?l",
+		"d", "?l",
+		"e", "?l",
+		"f", "?l",
+		"g", "?l",
+		"h", "?l",
+		"i", "?l",
+		"j", "?l",
+		"k", "?l",
+		"l", "?l",
+		"m", "?l",
+		"n", "?l",
+		"o", "?l",
+		"p", "?l",
+		"q", "?l",
+		"r", "?l",
+		"s", "?l",
+		"t", "?l",
+		"u", "?l",
+		"v", "?l",
+		"w", "?l",
+		"x", "?l",
+		"y", "?l",
+		"z", "?l")
+
+	upperReplacer := strings.NewReplacer(
+		"A", "?u",
+		"B", "?u",
+		"C", "?u",
+		"D", "?u",
+		"E", "?u",
+		"F", "?u",
+		"G", "?u",
+		"H", "?u",
+		"I", "?u",
+		"J", "?u",
+		"K", "?u",
+		"L", "?u",
+		"M", "?u",
+		"N", "?u",
+		"O", "?u",
+		"P", "?u",
+		"Q", "?u",
+		"R", "?u",
+		"S", "?u",
+		"T", "?u",
+		"U", "?u",
+		"V", "?u",
+		"W", "?u",
+		"X", "?u",
+		"Y", "?u",
+		"Z", "?u")
+
+	digitReplacer := strings.NewReplacer(
+		"0", "?d",
+		"1", "?d",
+		"2", "?d",
+		"3", "?d",
+		"4", "?d",
+		"5", "?d",
+		"6", "?d",
+		"7", "?d",
+		"8", "?d",
+		"9", "?d")
+
+	specialReplacer := strings.NewReplacer(
+		" ", "?s",
+		"!", "?s",
+		"\"", "?s",
+		"#", "?s",
+		"$", "?s",
+		"%", "?s",
+		"&", "?s",
+		"\\", "?s",
+		"(", "?s",
+		")", "?s",
+		"*", "?s",
+		"+", "?s",
+		",", "?s",
+		"-", "?s",
+		".", "?s",
+		"'", "?s",
+		"/", "?s",
+		":", "?s",
+		";", "?s",
+		"<", "?s",
+		"=", "?s",
+		">", "?s",
+		"?", "?s",
+		"@", "?s",
+		"[", "?s",
+		"]", "?s",
+		"^", "?s",
+		"_", "?s",
+		"`", "?s",
+		"{", "?s",
+		"|", "?s",
+		"}", "?s",
+		"~", "?s")
+
+	if strings.Contains(chars, "u") {
+		str = upperReplacer.Replace(str)
+	}
+
+	if strings.Contains(chars, "l") {
+		str = lowerReplacer.Replace(str)
+	}
+
+	if strings.Contains(chars, "d") {
+		str = digitReplacer.Replace(str)
+	}
+
+	if strings.Contains(chars, "s") {
+		str = specialReplacer.Replace(str)
+	}
+
+	return str
+}
+
 // TestComplexity tests the complexity of an input string
 func TestComplexity(str string) int {
 	c := 0
@@ -92,8 +367,8 @@ func ReplaceAtIndex(in string, r rune, i int) string {
 }
 
 // ReplaceWord replaces a mask within an input string with a value
-func ReplaceWord(stringword, mask string, value string, replacer *strings.Replacer) string {
-	tokenmask := replacer.Replace(value)
+func ReplaceWord(stringword, mask string, value string) string {
+	tokenmask := MakeMask(value)
 	if strings.Contains(mask, tokenmask) {
 
 		// format mask token chars into sub chars
