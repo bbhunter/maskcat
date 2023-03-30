@@ -170,7 +170,7 @@ $ echo 'Password123' | maskcat tokens 8
 Password
 
 # If value is above 99 all tokens are allowed
-$ echo 'Password123' | maskcat tokens 8
+$ echo 'Password123' | maskcat tokens 99
 Password
 NotAPassword
 ```
