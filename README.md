@@ -12,7 +12,7 @@ Maskcat performs 6 functions:
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
-> For more application examples: [Blog Post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
+> For more application examples: [blog post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
 
 ## Getting Started
 
@@ -188,4 +188,3 @@ $ cat list.tmp | maskcat partial du
 ?uassword?d?d?d
 ?uot?u?uassword?d?d?d
 ```
-
