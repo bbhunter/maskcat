@@ -14,182 +14,211 @@ import (
 )
 
 func main() {
+	if len(os.Args) <= 2 {
+		if len(os.Args) == 1 {
+			os.Args = append(os.Args, "default")
+		} else {
+			printUsage()
+			os.Exit(0)
+		}
+	}
 
 	stdIn := bufio.NewScanner(os.Stdin)
 
-	if len(os.Args) > 1 {
+	switch os.Args[1] {
+	case "match":
+		matchMasks(stdIn, os.Args[2])
+	case "sub":
+		subMasks(stdIn, os.Args[2])
+	case "mutate":
+		mutateMasks(stdIn, os.Args[2])
+	case "tokens":
+		generateTokens(stdIn, os.Args[2])
+	case "partial":
+		generatePartialMasks(stdIn, os.Args[2])
+	default:
+		generateMasks(stdIn)
+	}
+}
 
-		if len(os.Args) <= 2 {
-			fmt.Println("OPTIONS: match sub mutate tokens partial")
-			fmt.Println("EXAMPLE: stdin | maskcat match masks.lst")
-			fmt.Println("EXAMPLE: stdin | maskcat sub tokens.lst")
-			fmt.Println("EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>")
-			fmt.Println("EXAMPLE: stdin | maskcat tokens <MAX-LEN> (values over 99 allow all)")
-			fmt.Println("EXAMPLE: stdin | maskcat partial <MASK-CHARS>")
+// printUsage prints usage information for the program
+func printUsage() {
+	fmt.Println("OPTIONS: match sub mutate tokens partial")
+	fmt.Println("EXAMPLE: stdin | maskcat match masks.lst")
+	fmt.Println("EXAMPLE: stdin | maskcat sub tokens.lst")
+	fmt.Println("EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>")
+	fmt.Println("EXAMPLE: stdin | maskcat tokens <MAX-LEN> (values over 99 allow all)")
+	fmt.Println("EXAMPLE: stdin | maskcat partial <MASK-CHARS>")
+}
+
+// matchMasks reads masks from a file and prints any input strings that match one of the masks
+func matchMasks(stdIn *bufio.Scanner, infile string) {
+	buf, err := os.Open(infile)
+	utils.CheckError(err)
+
+	defer func() {
+		if err = buf.Close(); err != nil {
+			fmt.Println(err)
 			os.Exit(0)
 		}
+	}()
 
-		if os.Args[1] == "match" {
-			infile := os.Args[2]
-			buf, err := os.Open(infile)
-			utils.CheckError(err)
+	filescanner := bufio.NewScanner(buf)
+	var masks []string
 
-			defer func() {
-				if err = buf.Close(); err != nil {
-					fmt.Println(err)
-					os.Exit(0)
-				}
-			}()
+	for filescanner.Scan() {
+		var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
+		if IsMask(filescanner.Text()) == false {
+			fmt.Println("[SKIP] Input mask contains non-mask characters: ", filescanner.Text())
+			continue
+		}
+		masks = append(masks, filescanner.Text())
+	}
 
-			filescanner := bufio.NewScanner(buf)
-			var masks []string
+	for stdIn.Scan() {
+		mask := utils.MakeMask(stdIn.Text())
 
-			for filescanner.Scan() {
-				var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
-				if IsMask(filescanner.Text()) == false {
-					fmt.Println("[SKIP] Input mask contains non-mask characters: ", filescanner.Text())
-					continue
-				}
-				masks = append(masks, filescanner.Text())
+		for _, value := range masks {
+
+			if mask == value {
+				fmt.Println(stdIn.Text())
+				break
 			}
 
-			for stdIn.Scan() {
-				mask := utils.MakeMask(stdIn.Text())
-
-				for _, value := range masks {
-
-					if mask == value {
-						fmt.Println(stdIn.Text())
-						break
-					}
-
-					if err := stdIn.Err(); err != nil {
-						fmt.Fprintln(os.Stderr, "reading standard input:", err)
-					}
-				}
+			if err := stdIn.Err(); err != nil {
+				fmt.Fprintln(os.Stderr, "reading standard input:", err)
 			}
+		}
+	}
+}
 
-		} else if os.Args[1] == "sub" {
-			infile := os.Args[2]
-			buf, err := os.Open(infile)
-			utils.CheckError(err)
+// subMasks reads tokens from a file and replaces mask characters in the input strings with the tokens
+func subMasks(stdIn *bufio.Scanner, infile string) {
+	buf, err := os.Open(infile)
+	utils.CheckError(err)
 
-			defer func() {
-				if err = buf.Close(); err != nil {
-					fmt.Println(err)
-					os.Exit(0)
-				}
-			}()
+	defer func() {
+		if err = buf.Close(); err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
+	}()
 
-			filescanner := bufio.NewScanner(buf)
-			var tokens []string
+	filescanner := bufio.NewScanner(buf)
+	var tokens []string
 
-			for filescanner.Scan() {
-				if filescanner.Text() != "" {
-					tokens = append(tokens, filescanner.Text())
-				}
-
-				if err := filescanner.Err(); err != nil {
-					fmt.Fprintln(os.Stderr, "reading standard input:", err)
-				}
-			}
-
-			for stdIn.Scan() {
-				stringword := stdIn.Text()
-				mask := utils.MakeMask(stdIn.Text())
-
-				for _, value := range tokens {
-					newWord := utils.ReplaceWord(stringword, mask, value)
-
-					if newWord != "" {
-						fmt.Println(newWord)
-					}
-				}
-			}
-
-		} else if os.Args[1] == "mutate" {
-			var tokens []string
-			var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
-
-			if IsInt(os.Args[2]) == false {
-				utils.CheckError(errors.New("ERROR: Invalid Chunk Size"))
-			}
-
-			for stdIn.Scan() {
-				chunksInt, err := strconv.Atoi(os.Args[2])
-				utils.CheckError(err)
-				chunks := utils.ChunkString(stdIn.Text(), chunksInt)
-				var achunks []string
-				for _, ch := range chunks {
-					if len(ch) == chunksInt {
-						achunks = append(achunks, ch)
-					}
-				}
-				tokens = append(tokens, achunks...)
-				tokens = utils.RemoveDuplicateStr(tokens)
-
-				stringword := stdIn.Text()
-				mask := utils.MakeMask(stdIn.Text())
-
-				for _, value := range tokens {
-					newWord := utils.ReplaceWord(stringword, mask, value)
-
-					if newWord != "" {
-						fmt.Println(newWord)
-					}
-				}
-			}
-		} else if os.Args[1] == "tokens" {
-			var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
-
-			if IsInt(os.Args[2]) == false {
-				utils.CheckError(errors.New("ERROR: Invalid String Size"))
-			}
-
-			for stdIn.Scan() {
-				token := utils.MakeToken(stdIn.Text())
-				var IsToken = regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString
-				if IsToken(token) == false {
-					continue
-				}
-
-				length, err := strconv.Atoi(os.Args[2])
-				utils.CheckError(err)
-
-				// VALUES OVER 99 LET ALL THROUGH
-				if len(token) != length && length < 98 {
-					continue
-				}
-
-				fmt.Printf("%s\n", token)
-			}
-		} else if os.Args[1] == "partial" {
-			var IsMaskChars = regexp.MustCompile(`^[ulds]+$`).MatchString
-
-			if IsMaskChars(os.Args[2]) == false {
-				utils.CheckError(errors.New("ERROR: Can only contain 'u','d','l', and 's'"))
-			}
-
-			for stdIn.Scan() {
-				partial := utils.MakePartialMask(stdIn.Text(), os.Args[2])
-				fmt.Printf("%s\n", partial)
-			}
-
+	for filescanner.Scan() {
+		if filescanner.Text() != "" {
+			tokens = append(tokens, filescanner.Text())
 		}
 
-	} else {
-		// else make masks
-		for stdIn.Scan() {
-			mask := utils.MakeMask(stdIn.Text())
-			var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
-			if IsMask(mask) == false {
-				continue
-			}
-			fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
-		}
-
-		if err := stdIn.Err(); err != nil {
+		if err := filescanner.Err(); err != nil {
 			fmt.Fprintln(os.Stderr, "reading standard input:", err)
 		}
+	}
+
+	for stdIn.Scan() {
+		stringword := stdIn.Text()
+		mask := utils.MakeMask(stdIn.Text())
+
+		for _, value := range tokens {
+			newWord := utils.ReplaceWord(stringword, mask, value)
+
+			if newWord != "" {
+				fmt.Println(newWord)
+			}
+		}
+	}
+}
+
+// mutateMasks splits the input strings into chunks and replaces mask characters with the chunks
+func mutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
+	var tokens []string
+	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
+
+	if IsInt(chunkSizeStr) == false {
+		utils.CheckError(errors.New("ERROR: Invalid Chunk Size"))
+	}
+
+	for stdIn.Scan() {
+		chunksInt, err := strconv.Atoi(chunkSizeStr)
+		utils.CheckError(err)
+		chunks := utils.ChunkString(stdIn.Text(), chunksInt)
+		var achunks []string
+		for _, ch := range chunks {
+			if len(ch) == chunksInt {
+				achunks = append(achunks, ch)
+			}
+		}
+		tokens = append(tokens, achunks...)
+		tokens = utils.RemoveDuplicateStr(tokens)
+
+		stringword := stdIn.Text()
+		mask := utils.MakeMask(stdIn.Text())
+
+		for _, value := range tokens {
+			newWord := utils.ReplaceWord(stringword, mask, value)
+
+			if newWord != "" {
+				fmt.Println(newWord)
+			}
+		}
+	}
+}
+
+// generateTokens generates tokens from the input strings by removing all non-alpha characters
+func generateTokens(stdIn *bufio.Scanner, lengthStr string) {
+	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
+
+	if IsInt(lengthStr) == false {
+		utils.CheckError(errors.New("ERROR: Invalid String Size"))
+	}
+
+	for stdIn.Scan() {
+		token := utils.MakeToken(stdIn.Text())
+		var IsToken = regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString
+		if IsToken(token) == false {
+			continue
+		}
+
+		length, err := strconv.Atoi(lengthStr)
+		utils.CheckError(err)
+
+		// VALUES OVER 99 LET ALL THROUGH
+		if len(token) != length && length < 98 {
+			continue
+		}
+
+		fmt.Printf("%s\n", token)
+	}
+}
+
+// generatePartialMasks generates partial masks from the input strings using the specified mask characters
+func generatePartialMasks(stdIn *bufio.Scanner, maskChars string) {
+	var IsMaskChars = regexp.MustCompile(`^[ulds]+$`).MatchString
+
+	if IsMaskChars(maskChars) == false {
+		utils.CheckError(errors.New("ERROR: Can only contain 'u','d','l', and 's'"))
+	}
+
+	for stdIn.Scan() {
+		partial := utils.MakePartialMask(stdIn.Text(), maskChars)
+		fmt.Printf("%s\n", partial)
+	}
+}
+
+// generateMasks generates masks from the input strings and prints information about the masks
+func generateMasks(stdIn *bufio.Scanner) {
+	for stdIn.Scan() {
+		mask := utils.MakeMask(stdIn.Text())
+		var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
+		if IsMask(mask) == false {
+			continue
+		}
+		fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
+	}
+
+	if err := stdIn.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "reading standard input:", err)
 	}
 }

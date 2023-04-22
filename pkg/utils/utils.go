@@ -4,279 +4,69 @@ package utils
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
 // MakeMask performs substitution to make HC masks
 func MakeMask(str string) string {
-	replacer := strings.NewReplacer(
-		"a", "?l",
-		"b", "?l",
-		"c", "?l",
-		"d", "?l",
-		"e", "?l",
-		"f", "?l",
-		"g", "?l",
-		"h", "?l",
-		"i", "?l",
-		"j", "?l",
-		"k", "?l",
-		"l", "?l",
-		"m", "?l",
-		"n", "?l",
-		"o", "?l",
-		"p", "?l",
-		"q", "?l",
-		"r", "?l",
-		"s", "?l",
-		"t", "?l",
-		"u", "?l",
-		"v", "?l",
-		"w", "?l",
-		"x", "?l",
-		"y", "?l",
-		"z", "?l",
-		"A", "?u",
-		"B", "?u",
-		"C", "?u",
-		"D", "?u",
-		"E", "?u",
-		"F", "?u",
-		"G", "?u",
-		"H", "?u",
-		"I", "?u",
-		"J", "?u",
-		"K", "?u",
-		"L", "?u",
-		"M", "?u",
-		"N", "?u",
-		"O", "?u",
-		"P", "?u",
-		"Q", "?u",
-		"R", "?u",
-		"S", "?u",
-		"T", "?u",
-		"U", "?u",
-		"V", "?u",
-		"W", "?u",
-		"X", "?u",
-		"Y", "?u",
-		"Z", "?u",
-		"0", "?d",
-		"1", "?d",
-		"2", "?d",
-		"3", "?d",
-		"4", "?d",
-		"5", "?d",
-		"6", "?d",
-		"7", "?d",
-		"8", "?d",
-		"9", "?d",
-		" ", "?s",
-		"!", "?s",
-		"\"", "?s",
-		"#", "?s",
-		"$", "?s",
-		"%", "?s",
-		"&", "?s",
-		"\\", "?s",
-		"(", "?s",
-		")", "?s",
-		"*", "?s",
-		"+", "?s",
-		",", "?s",
-		"-", "?s",
-		".", "?s",
-		"'", "?s",
-		"/", "?s",
-		":", "?s",
-		";", "?s",
-		"<", "?s",
-		"=", "?s",
-		">", "?s",
-		"?", "?s",
-		"@", "?s",
-		"[", "?s",
-		"]", "?s",
-		"^", "?s",
-		"_", "?s",
-		"`", "?s",
-		"{", "?s",
-		"|", "?s",
-		"}", "?s",
-		"~", "?s",
-	)
+	var args []string
+	for c := 'a'; c <= 'z'; c++ {
+		args = append(args, string(c), "?l")
+	}
+	for c := 'A'; c <= 'Z'; c++ {
+		args = append(args, string(c), "?u")
+	}
+	for c := '0'; c <= '9'; c++ {
+		args = append(args, string(c), "?d")
+	}
+	specialChars := " !\"#$%&\\()*+,-./:;<=>?@[\\]^_`{|}~"
+	for _, c := range specialChars {
+		args = append(args, string(c), "?s")
+	}
+	replacer := strings.NewReplacer(args...)
 	return replacer.Replace(str)
 }
 
 // MakeToken replaces all non-alpha characters to generate tokens
 func MakeToken(str string) string {
-	replacer := strings.NewReplacer(
-		"0", "",
-		"1", "",
-		"2", "",
-		"3", "",
-		"4", "",
-		"5", "",
-		"6", "",
-		"7", "",
-		"8", "",
-		"9", "",
-		"!", "",
-		"\"", "",
-		"#", "",
-		"$", "",
-		"%", "",
-		"&", "",
-		"\\", "",
-		"(", "",
-		")", "",
-		"*", "",
-		"+", "",
-		",", "",
-		"-", "",
-		".", "",
-		"'", "",
-		"/", "",
-		":", "",
-		";", "",
-		"<", "",
-		"=", "",
-		">", "",
-		"?", "",
-		"@", "",
-		"[", "",
-		"]", "",
-		"^", "",
-		"_", "",
-		"`", "",
-		"{", "",
-		"|", "",
-		"}", "",
-		"~", "",
-	)
-	return replacer.Replace(str)
+	re := regexp.MustCompile(`[^a-zA-Z]+`)
+	return re.ReplaceAllString(str, "")
 }
 
-// MakePartialMask creates a
+// MakePartialMask creates a partial Hashcat mask
 func MakePartialMask(str string, chars string) string {
-	lowerReplacer := strings.NewReplacer(
-		"a", "?l",
-		"b", "?l",
-		"c", "?l",
-		"d", "?l",
-		"e", "?l",
-		"f", "?l",
-		"g", "?l",
-		"h", "?l",
-		"i", "?l",
-		"j", "?l",
-		"k", "?l",
-		"l", "?l",
-		"m", "?l",
-		"n", "?l",
-		"o", "?l",
-		"p", "?l",
-		"q", "?l",
-		"r", "?l",
-		"s", "?l",
-		"t", "?l",
-		"u", "?l",
-		"v", "?l",
-		"w", "?l",
-		"x", "?l",
-		"y", "?l",
-		"z", "?l")
-
-	upperReplacer := strings.NewReplacer(
-		"A", "?u",
-		"B", "?u",
-		"C", "?u",
-		"D", "?u",
-		"E", "?u",
-		"F", "?u",
-		"G", "?u",
-		"H", "?u",
-		"I", "?u",
-		"J", "?u",
-		"K", "?u",
-		"L", "?u",
-		"M", "?u",
-		"N", "?u",
-		"O", "?u",
-		"P", "?u",
-		"Q", "?u",
-		"R", "?u",
-		"S", "?u",
-		"T", "?u",
-		"U", "?u",
-		"V", "?u",
-		"W", "?u",
-		"X", "?u",
-		"Y", "?u",
-		"Z", "?u")
-
-	digitReplacer := strings.NewReplacer(
-		"0", "?d",
-		"1", "?d",
-		"2", "?d",
-		"3", "?d",
-		"4", "?d",
-		"5", "?d",
-		"6", "?d",
-		"7", "?d",
-		"8", "?d",
-		"9", "?d")
-
-	specialReplacer := strings.NewReplacer(
-		" ", "?s",
-		"!", "?s",
-		"\"", "?s",
-		"#", "?s",
-		"$", "?s",
-		"%", "?s",
-		"&", "?s",
-		"\\", "?s",
-		"(", "?s",
-		")", "?s",
-		"*", "?s",
-		"+", "?s",
-		",", "?s",
-		"-", "?s",
-		".", "?s",
-		"'", "?s",
-		"/", "?s",
-		":", "?s",
-		";", "?s",
-		"<", "?s",
-		"=", "?s",
-		">", "?s",
-		"?", "?s",
-		"@", "?s",
-		"[", "?s",
-		"]", "?s",
-		"^", "?s",
-		"_", "?s",
-		"`", "?s",
-		"{", "?s",
-		"|", "?s",
-		"}", "?s",
-		"~", "?s")
+	var lowerArgs, upperArgs, digitArgs []string
+	for c := 'a'; c <= 'z'; c++ {
+		lowerArgs = append(lowerArgs, string(c), "?l")
+	}
+	for c := 'A'; c <= 'Z'; c++ {
+		upperArgs = append(upperArgs, string(c), "?u")
+	}
+	for c := '0'; c <= '9'; c++ {
+		digitArgs = append(digitArgs, string(c), "?d")
+	}
+	specialChars := " !\"#$%&\\()*+,-./:;<=>?@[\\]^_`{|}~"
+	specialArgs := make([]string, len(specialChars)*2)
+	for i, c := range specialChars {
+		specialArgs[i*2] = string(c)
+		specialArgs[i*2+1] = "?s"
+	}
 
 	if strings.Contains(chars, "u") {
-		str = upperReplacer.Replace(str)
+		str = strings.NewReplacer(upperArgs...).Replace(str)
 	}
 
 	if strings.Contains(chars, "l") {
-		str = lowerReplacer.Replace(str)
+		str = strings.NewReplacer(lowerArgs...).Replace(str)
 	}
 
 	if strings.Contains(chars, "d") {
-		str = digitReplacer.Replace(str)
+		str = strings.NewReplacer(digitArgs...).Replace(str)
 	}
 
 	if strings.Contains(chars, "s") {
-		str = specialReplacer.Replace(str)
+		str = strings.NewReplacer(specialArgs...).Replace(str)
 	}
 
 	return str
@@ -284,38 +74,32 @@ func MakePartialMask(str string, chars string) string {
 
 // TestComplexity tests the complexity of an input string
 func TestComplexity(str string) int {
-	c := 0
-	if strings.Contains(str, "?u") {
-		c++
+	complexity := 0
+	charTypes := []string{"?u", "?l", "?d", "?s"}
+	for _, charType := range charTypes {
+		if strings.Contains(str, charType) {
+			complexity++
+		}
 	}
-	if strings.Contains(str, "?l") {
-		c++
-	}
-	if strings.Contains(str, "?d") {
-		c++
-	}
-	if strings.Contains(str, "?s") {
-		c++
-	}
-	return c
+	return complexity
 }
 
 // TestEntropy calculates mask entropy
 func TestEntropy(str string) int {
-	c := 0
-	if strings.Contains(str, "?u") {
-		c += strings.Count(str, "?u") * 26
+	entropy := 0
+	charTypes := []struct {
+		charType string
+		count    int
+	}{
+		{"?u", 26},
+		{"?l", 26},
+		{"?d", 10},
+		{"?s", 33},
 	}
-	if strings.Contains(str, "?l") {
-		c += strings.Count(str, "?l") * 26
+	for _, ct := range charTypes {
+		entropy += strings.Count(str, ct.charType) * ct.count
 	}
-	if strings.Contains(str, "?d") {
-		c += strings.Count(str, "?d") * 10
-	}
-	if strings.Contains(str, "?s") {
-		c += strings.Count(str, "?s") * 33
-	}
-	return c
+	return entropy
 }
 
 // ChunkString splits string into chunks
@@ -326,25 +110,21 @@ func ChunkString(s string, chunkSize int) []string {
 	if chunkSize >= len(s) {
 		return []string{s}
 	}
-	var chunks = make([]string, 0, (len(s)-1)/chunkSize+1)
-	currentLen := 0
-	currentStart := 0
-	for i := range s {
-		if currentLen == chunkSize {
-			chunks = append(chunks, s[currentStart:i])
-			currentLen = 0
-			currentStart = i
+	var chunks []string
+	for i := 0; i < len(s); i += chunkSize {
+		end := i + chunkSize
+		if end > len(s) {
+			end = len(s)
 		}
-		currentLen++
+		chunks = append(chunks, s[i:end])
 	}
-	chunks = append(chunks, s[currentStart:])
 	return chunks
 }
 
 // RemoveDuplicateStr removes duplicate strings from array
 func RemoveDuplicateStr(strSlice []string) []string {
 	allKeys := make(map[string]bool)
-	list := []string{}
+	list := make([]string, 0, len(strSlice))
 	for _, item := range strSlice {
 		if _, value := allKeys[item]; !value {
 			allKeys[item] = true
@@ -356,13 +136,11 @@ func RemoveDuplicateStr(strSlice []string) []string {
 
 // ReplaceAtIndex replaces a rune at index in string
 func ReplaceAtIndex(in string, r rune, i int) string {
-	out := []rune(in)
-	if len(out) == i {
-		i := i - 1
-		out[i] = r
-	} else if i <= len(out) {
-		out[i] = r
+	if i < 0 || i >= len(in) {
+		CheckError(fmt.Errorf("index out of range"))
 	}
+	out := []rune(in)
+	out[i] = r
 	return string(out)
 }
 
@@ -370,28 +148,23 @@ func ReplaceAtIndex(in string, r rune, i int) string {
 func ReplaceWord(stringword, mask string, value string) string {
 	tokenmask := MakeMask(value)
 	if strings.Contains(mask, tokenmask) {
-
-		// format mask token chars into sub chars
 		newword := strings.Replace(mask, tokenmask, value, -1)
-		newword = strings.Replace(newword, "?u", "?", -1)
-		newword = strings.Replace(newword, "?l", "?", -1)
-		newword = strings.Replace(newword, "?d", "?", -1)
-		newword = strings.Replace(newword, "?s", "?", -1)
+		newword = strings.ReplaceAll(newword, "?u", "?")
+		newword = strings.ReplaceAll(newword, "?l", "?")
+		newword = strings.ReplaceAll(newword, "?d", "?")
+		newword = strings.ReplaceAll(newword, "?s", "?")
 
-		// loop over the string and finish the sub
-		for i, c := range stringword {
-			for x, y := range newword {
-				if string(y) == "?" && x == i {
-					newword = ReplaceAtIndex(newword, rune(c), i)
-					break
+		for i := range stringword {
+			if i < len(newword) {
+
+				if newword[i] == '?' {
+					newword = ReplaceAtIndex(newword, rune(stringword[i]), i)
 				}
 			}
-
 		}
-		if strings.Contains(newword, value) {
-			if newword != value {
-				return newword
-			}
+
+		if strings.Contains(newword, value) && newword != value {
+			return newword
 		}
 	}
 	return ""
