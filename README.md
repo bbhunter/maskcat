@@ -2,7 +2,7 @@
 Maskcat
  </h1>
 
-Maskcat performs 6 functions:
+Maskcat (`cat` mask) performs 6 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from `stdin` to masks from a file argument.
 - Substitutes tokens in wordlists using masks.
