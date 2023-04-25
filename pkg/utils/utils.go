@@ -140,8 +140,11 @@ func ReplaceAtIndex(in string, r rune, i int) string {
 		CheckError(fmt.Errorf("index out of range"))
 	}
 	out := []rune(in)
-	if i >= 0 && i <= len(out) {
+	if i >= 0 && i < len(out) {
 		out[i] = r
+		// In instances where i is out of bounds go to the end
+	} else if i >= 0 && i == len(out) {
+		out[len(out)-1] = r
 	}
 	return string(out)
 }
