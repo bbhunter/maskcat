@@ -53,12 +53,12 @@ func MakePartialMask(str string, chars string) string {
 		specialArgs[i*2+1] = "?s"
 	}
 
-	if strings.Contains(chars, "u") {
-		str = strings.NewReplacer(upperArgs...).Replace(str)
-	}
-
 	if strings.Contains(chars, "l") {
 		str = strings.NewReplacer(lowerArgs...).Replace(str)
+	}
+
+	if strings.Contains(chars, "u") {
+		str = strings.NewReplacer(upperArgs...).Replace(str)
 	}
 
 	if strings.Contains(chars, "d") {
@@ -66,7 +66,11 @@ func MakePartialMask(str string, chars string) string {
 	}
 
 	if strings.Contains(chars, "s") {
-		str = strings.NewReplacer(specialArgs...).Replace(str)
+		if strings.Contains(chars, "u") || strings.Contains(chars, "l") || strings.Contains(chars, "d") {
+			str = ""
+		} else {
+			str = strings.NewReplacer(specialArgs...).Replace(str)
+		}
 	}
 
 	return str
