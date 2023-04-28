@@ -137,7 +137,7 @@ func mutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
 
 	if IsInt(chunkSizeStr) == false {
-		utils.CheckError(errors.New("ERROR: Invalid Chunk Size"))
+		utils.CheckError(errors.New("Invalid Chunk Size"))
 	}
 
 	for stdIn.Scan() {
@@ -171,7 +171,7 @@ func generateTokens(stdIn *bufio.Scanner, lengthStr string) {
 	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
 
 	if IsInt(lengthStr) == false {
-		utils.CheckError(errors.New("ERROR: Invalid String Size"))
+		utils.CheckError(errors.New("Invalid String Size"))
 	}
 
 	for stdIn.Scan() {
@@ -198,7 +198,7 @@ func generatePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 	var IsMaskChars = regexp.MustCompile(`^[ulds]+$`).MatchString
 
 	if IsMaskChars(maskChars) == false {
-		utils.CheckError(errors.New("ERROR: Can only contain 'u','d','l', and 's'"))
+		utils.CheckError(errors.New("Can only contain 'u','d','l', and 's'"))
 	}
 
 	for stdIn.Scan() {
