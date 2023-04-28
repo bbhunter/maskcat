@@ -36,7 +36,7 @@ func MakeToken(str string) string {
 
 // MakePartialMask creates a partial Hashcat mask
 func MakePartialMask(str string, chars string) string {
-	var lowerArgs, upperArgs, digitArgs []string
+	var lowerArgs, upperArgs, digitArgs, args []string
 	for c := 'a'; c <= 'z'; c++ {
 		lowerArgs = append(lowerArgs, string(c), "?l")
 	}
@@ -54,26 +54,21 @@ func MakePartialMask(str string, chars string) string {
 	}
 
 	if strings.Contains(chars, "l") {
-		str = strings.NewReplacer(lowerArgs...).Replace(str)
+		args = append(args, lowerArgs...)
 	}
 
 	if strings.Contains(chars, "u") {
-		str = strings.NewReplacer(upperArgs...).Replace(str)
+		args = append(args, upperArgs...)
 	}
 
 	if strings.Contains(chars, "d") {
-		str = strings.NewReplacer(digitArgs...).Replace(str)
+		args = append(args, digitArgs...)
 	}
 
 	if strings.Contains(chars, "s") {
-		if strings.Contains(chars, "u") || strings.Contains(chars, "l") || strings.Contains(chars, "d") {
-			str = ""
-		} else {
-			str = strings.NewReplacer(specialArgs...).Replace(str)
-		}
+		args = append(args, specialArgs...)
 	}
-
-	return str
+	return strings.NewReplacer(args...).Replace(str)
 }
 
 // TestComplexity tests the complexity of an input string
