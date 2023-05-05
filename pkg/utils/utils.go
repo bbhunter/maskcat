@@ -8,34 +8,8 @@ import (
 	"strings"
 )
 
-// MakeMask performs substitution to make HC masks
-func MakeMask(str string) string {
-	var args []string
-	for c := 'a'; c <= 'z'; c++ {
-		args = append(args, string(c), "?l")
-	}
-	for c := 'A'; c <= 'Z'; c++ {
-		args = append(args, string(c), "?u")
-	}
-	for c := '0'; c <= '9'; c++ {
-		args = append(args, string(c), "?d")
-	}
-	specialChars := " !\"#$%&\\()*+,-./:;<=>?@[\\]^_`{|}~"
-	for _, c := range specialChars {
-		args = append(args, string(c), "?s")
-	}
-	replacer := strings.NewReplacer(args...)
-	return replacer.Replace(str)
-}
-
-// MakeToken replaces all non-alpha characters to generate tokens
-func MakeToken(str string) string {
-	re := regexp.MustCompile(`[^a-zA-Z]+`)
-	return re.ReplaceAllString(str, "")
-}
-
-// MakePartialMask creates a partial Hashcat mask
-func MakePartialMask(str string, chars string) string {
+// ConstructReplacements create an array mapping which characters to replace
+func ConstructReplacements(str string) []string {
 	var lowerArgs, upperArgs, digitArgs, args []string
 	for c := 'a'; c <= 'z'; c++ {
 		lowerArgs = append(lowerArgs, string(c), "?l")
@@ -53,22 +27,39 @@ func MakePartialMask(str string, chars string) string {
 		specialArgs[i*2+1] = "?s"
 	}
 
-	if strings.Contains(chars, "l") {
+	if strings.Contains(str, "l") {
 		args = append(args, lowerArgs...)
 	}
 
-	if strings.Contains(chars, "u") {
+	if strings.Contains(str, "u") {
 		args = append(args, upperArgs...)
 	}
 
-	if strings.Contains(chars, "d") {
+	if strings.Contains(str, "d") {
 		args = append(args, digitArgs...)
 	}
 
-	if strings.Contains(chars, "s") {
+	if strings.Contains(str, "s") {
 		args = append(args, specialArgs...)
 	}
-	return strings.NewReplacer(args...).Replace(str)
+
+	return args
+}
+
+// MakeMask performs substitution to make HC masks
+func MakeMask(str string, replacements []string) string {
+	return strings.NewReplacer(replacements...).Replace(str)
+}
+
+// MakeToken replaces all non-alpha characters to generate tokens
+func MakeToken(str string) string {
+	re := regexp.MustCompile(`[^a-zA-Z]+`)
+	return re.ReplaceAllString(str, "")
+}
+
+// MakePartialMask creates a partial Hashcat mask
+func MakePartialMask(str string, replacements []string) string {
+	return strings.NewReplacer(replacements...).Replace(str)
 }
 
 // TestComplexity tests the complexity of an input string
@@ -149,8 +140,10 @@ func ReplaceAtIndex(in string, r rune, i int) string {
 }
 
 // ReplaceWord replaces a mask within an input string with a value
-func ReplaceWord(stringword, mask string, value string) string {
-	tokenmask := MakeMask(value)
+// The first strings.Replace(-1) will replace endlessly this can be modified
+// for different behavior
+func ReplaceWord(stringword, mask string, value string, replacements []string) string {
+	tokenmask := MakeMask(value, replacements)
 	if strings.Contains(mask, tokenmask) {
 		newword := strings.Replace(mask, tokenmask, value, -1)
 		newword = strings.ReplaceAll(newword, "?u", "?")

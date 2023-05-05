@@ -65,6 +65,7 @@ func matchMasks(stdIn *bufio.Scanner, infile string) {
 
 	filescanner := bufio.NewScanner(buf)
 	var masks []string
+	args := utils.ConstructReplacements("ulds")
 
 	for filescanner.Scan() {
 		var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
@@ -76,7 +77,7 @@ func matchMasks(stdIn *bufio.Scanner, infile string) {
 	}
 
 	for stdIn.Scan() {
-		mask := utils.MakeMask(stdIn.Text())
+		mask := utils.MakeMask(stdIn.Text(), args)
 
 		for _, value := range masks {
 
@@ -106,6 +107,7 @@ func subMasks(stdIn *bufio.Scanner, infile string) {
 
 	filescanner := bufio.NewScanner(buf)
 	var tokens []string
+	args := utils.ConstructReplacements("ulds")
 
 	for filescanner.Scan() {
 		if filescanner.Text() != "" {
@@ -119,10 +121,10 @@ func subMasks(stdIn *bufio.Scanner, infile string) {
 
 	for stdIn.Scan() {
 		stringword := stdIn.Text()
-		mask := utils.MakeMask(stdIn.Text())
+		mask := utils.MakeMask(stdIn.Text(), args)
 
 		for _, value := range tokens {
-			newWord := utils.ReplaceWord(stringword, mask, value)
+			newWord := utils.ReplaceWord(stringword, mask, value, args)
 
 			if newWord != "" {
 				fmt.Println(newWord)
@@ -135,6 +137,7 @@ func subMasks(stdIn *bufio.Scanner, infile string) {
 func mutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 	var tokens []string
 	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
+	args := utils.ConstructReplacements("ulds")
 
 	if IsInt(chunkSizeStr) == false {
 		utils.CheckError(errors.New("Invalid Chunk Size"))
@@ -154,10 +157,10 @@ func mutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 		tokens = utils.RemoveDuplicateStr(tokens)
 
 		stringword := stdIn.Text()
-		mask := utils.MakeMask(stdIn.Text())
+		mask := utils.MakeMask(stdIn.Text(), args)
 
 		for _, value := range tokens {
-			newWord := utils.ReplaceWord(stringword, mask, value)
+			newWord := utils.ReplaceWord(stringword, mask, value, args)
 
 			if newWord != "" {
 				fmt.Println(newWord)
@@ -196,21 +199,23 @@ func generateTokens(stdIn *bufio.Scanner, lengthStr string) {
 // generatePartialMasks generates partial masks from the input strings using the specified mask characters
 func generatePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 	var IsMaskChars = regexp.MustCompile(`^[ulds]+$`).MatchString
+	args := utils.ConstructReplacements(maskChars)
 
 	if IsMaskChars(maskChars) == false {
 		utils.CheckError(errors.New("Can only contain 'u','d','l', and 's'"))
 	}
 
 	for stdIn.Scan() {
-		partial := utils.MakePartialMask(stdIn.Text(), maskChars)
+		partial := utils.MakePartialMask(stdIn.Text(), args)
 		fmt.Printf("%s\n", partial)
 	}
 }
 
 // generateMasks generates masks from the input strings and prints information about the masks
 func generateMasks(stdIn *bufio.Scanner) {
+	args := utils.ConstructReplacements("ulds")
 	for stdIn.Scan() {
-		mask := utils.MakeMask(stdIn.Text())
+		mask := utils.MakeMask(stdIn.Text(), args)
 		var IsMask = regexp.MustCompile(`^[ulds?]+$`).MatchString
 		if IsMask(mask) == false {
 			continue
