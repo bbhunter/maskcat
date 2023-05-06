@@ -158,7 +158,6 @@ ms.navit6
 ### How does it work?
 
 - Token generation replaces all digit and special characters within a string then filters for token length based on the provided input.
-- Spaces are preserved
 
 ```
 $ cat list.tmp
