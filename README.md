@@ -2,13 +2,14 @@
 Maskcat
  </h1>
 
-Maskcat (`cat` mask) performs 6 functions:
+Maskcat (`cat` mask) performs 7 functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from `stdin` to masks.
 - Substitutes tokens in wordlists using masks.
 - Mutates `stdin` using masks to create new candidates.
 - Generates tokens from `stdin` by removing non-alpha characters.
 - Partially replaces masks from `stdin` by selecting character sets.
+- Removes characters from `stdin` by selecting character sets.
 
 > NOTE: There is no support for `?b` or multi-byte characters at this time.
 
@@ -24,6 +25,7 @@ Maskcat (`cat` mask) performs 6 functions:
 - [Mutating Input](#Mutating-Input)
 - [Generating Tokens](#Generating-Tokens)
 - [Partial Masks](#Partial-Masks)
+- [Removing Characters](#Removing-Characters)
 
 ### Install
 ```
@@ -187,4 +189,12 @@ NotAPassword?d?d?d
 $ cat list.tmp | maskcat partial du
 ?uassword?d?d?d
 ?uot?u?uassword?d?d?d
+```
+
+## Removing Characters
+
+```
+# Provide ulds as input and remaining characters will be returned
+$ echo 'Password123' | maskcat remove ul
+123
 ```

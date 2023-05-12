@@ -36,6 +36,8 @@ func main() {
 		generateTokens(stdIn, os.Args[2])
 	case "partial":
 		generatePartialMasks(stdIn, os.Args[2])
+	case "remove":
+		generatePartialRemoveMasks(stdIn, os.Args[2])
 	default:
 		generateMasks(stdIn)
 	}
@@ -49,6 +51,7 @@ func printUsage() {
 	fmt.Println("EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>")
 	fmt.Println("EXAMPLE: stdin | maskcat tokens <MAX-LEN> (values over 99 allow all)")
 	fmt.Println("EXAMPLE: stdin | maskcat partial <MASK-CHARS>")
+	fmt.Println("EXAMPLE: stdin | maskcat remove <MASK-CHARS>")
 }
 
 // matchMasks reads masks from a file and prints any input strings that match one of the masks
@@ -208,6 +211,22 @@ func generatePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 	for stdIn.Scan() {
 		partial := utils.MakePartialMask(stdIn.Text(), args)
 		fmt.Printf("%s\n", partial)
+	}
+}
+
+// generatePartialRemoveMasks removes characters in masks from the input strings using the specified mask characters
+func generatePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string) {
+	var IsMaskChars = regexp.MustCompile(`^[ulds]+$`).MatchString
+	args := utils.ConstructReplacements(maskChars)
+
+	if IsMaskChars(maskChars) == false {
+		utils.CheckError(errors.New("Can only contain 'u','d','l', and 's'"))
+	}
+
+	for stdIn.Scan() {
+		partial := utils.MakePartialMask(stdIn.Text(), args)
+		remaining := utils.RemoveMaskChars(partial)
+		fmt.Printf("%s\n", remaining)
 	}
 }
 

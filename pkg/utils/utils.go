@@ -62,7 +62,12 @@ func MakePartialMask(str string, replacements []string) string {
 	return strings.NewReplacer(replacements...).Replace(str)
 }
 
-// TestComplexity tests the complexity of an input string
+// RemoveMaskChars will replace mask characters in a string with nothing
+func RemoveMaskChars(str string) string {
+	return strings.NewReplacer("?u", "", "?l", "", "?d", "", "?s", "").Replace(str)
+}
+
+// TestComplexity tests the complexity of an input mask
 func TestComplexity(str string) int {
 	complexity := 0
 	charTypes := []string{"?u", "?l", "?d", "?s"}
@@ -146,10 +151,7 @@ func ReplaceWord(stringword, mask string, value string, replacements []string) s
 	tokenmask := MakeMask(value, replacements)
 	if strings.Contains(mask, tokenmask) {
 		newword := strings.Replace(mask, tokenmask, value, -1)
-		newword = strings.ReplaceAll(newword, "?u", "?")
-		newword = strings.ReplaceAll(newword, "?l", "?")
-		newword = strings.ReplaceAll(newword, "?d", "?")
-		newword = strings.ReplaceAll(newword, "?s", "?")
+		newword = strings.NewReplacer("?u", "?", "?l", "?", "?d", "?", "?s", "?").Replace(newword)
 
 		for i := range stringword {
 			if i < len(newword) {
