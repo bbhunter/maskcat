@@ -2,7 +2,7 @@
 Maskcat
  </h1>
 
-Maskcat (`cat` mask) performs 7 functions:
+Maskcat (`cat` mask) performs seven (7) functions:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
 - Matches words from `stdin` to masks.
 - Substitutes tokens in wordlists using masks.
@@ -127,11 +127,9 @@ Keywrd12345!!
 
 ### How Does Mutation Work?
 
-- Mutation takes input from STDIN then tokenizes it based on the parameter
-  provided by length. Tokens are then checked for length against the provided
-  parameter and valid values are added to an array. This array is then used in
-  the substitution mode to create new candidates. The results from the process
-  are nondeterministic.
+- Mutation takes input from `stdin` then tokenizes it based on the length and valid values are added to an array.
+- The array is then used in substitution mode to create new candidates.
+- The results from the process are nondeterministic.
 
 ```
 $ head -n 5 w.tmp | shuf | maskcat mutate 6 | sort -u
