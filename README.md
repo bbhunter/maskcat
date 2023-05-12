@@ -33,7 +33,7 @@ go install -v github.com/jakewnuk/maskcat@latest
 ```
 
 ## Making Masks:
-
+- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
  ```
 $ echo 'ThisISaT3ST123!' | maskcat
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s:15:4:333
@@ -69,7 +69,7 @@ $ head -n 100 cracked.lst | maskcat | cut -d ':' -f1 | sort | uniq -c | sort -rn
 ```
 
 ## Matching Words to Masks:
-
+- Matches words from `stdin` to masks.
  ```
 $ cat masks.txt
 ?u?l?l?l?u?u?l?u?d?u?u?d?d?d?s
@@ -97,11 +97,10 @@ ThisISaT3ST123!
 test
 bark
 tree
-
 ```
 
 ## Substituting Tokens in Words with Masks:
-
+- Substitutes tokens in wordlists using masks.
 ```
 # get a list of probable tokens
 
@@ -120,17 +119,15 @@ $ cat test.lst | maskcat sub tokens.lst
 TheKeywrd123
 Keywrds123
 Keywrd12345!!
-
  ```
 
 ## Mutating Input:
+- Mutates `stdin` using masks to create new candidates.
 
 ### How Does Mutation Work?
-
 - Mutation takes input from `stdin` then tokenizes it based on the length and valid values are added to an array.
 - The array is then used in substitution mode to create new candidates.
 - The results from the process are nondeterministic.
-
 ```
 $ head -n 5 w.tmp | shuf | maskcat mutate 6 | sort -u
 awesomawesome1
@@ -155,11 +152,10 @@ ms.navit6
 ```
 
 ## Generating Tokens
+- Generates tokens from `stdin` by removing non-alpha characters.
 
 ### How does it work?
-
 - Token generation replaces all digit and special characters within a string then filters for token length based on the provided input.
-
 ```
 $ cat list.tmp
 Password123
@@ -176,7 +172,7 @@ NotAPassword
 ```
 
 ## Partial Masks
-
+- Partially replaces masks from `stdin` by selecting character sets.
 ```
 # Provide ulds as input and partial masks will be returned
 $ cat list.tmp | maskcat partial d
@@ -190,7 +186,7 @@ $ cat list.tmp | maskcat partial du
 ```
 
 ## Removing Characters
-
+- Removes characters from `stdin` by selecting character sets.
 ```
 # Provide ulds as input and remaining characters will be returned
 $ echo 'Password123' | maskcat remove ul
