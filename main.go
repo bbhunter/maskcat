@@ -45,11 +45,11 @@ func main() {
 
 // printUsage prints usage information for the program
 func printUsage() {
-	fmt.Println("OPTIONS: match sub mutate tokens partial")
-	fmt.Println("EXAMPLE: stdin | maskcat match masks.lst")
-	fmt.Println("EXAMPLE: stdin | maskcat sub tokens.lst")
+	fmt.Println("OPTIONS: match sub mutate tokens partial remove")
+	fmt.Println("EXAMPLE: stdin | maskcat match <MASK-FILE>")
+	fmt.Println("EXAMPLE: stdin | maskcat sub <TOKENS-FILE>")
 	fmt.Println("EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>")
-	fmt.Println("EXAMPLE: stdin | maskcat tokens <MAX-LEN> (values over 99 allow all)")
+	fmt.Println("EXAMPLE: stdin | maskcat tokens <TOKEN-LEN> (99+ returns all)")
 	fmt.Println("EXAMPLE: stdin | maskcat partial <MASK-CHARS>")
 	fmt.Println("EXAMPLE: stdin | maskcat remove <MASK-CHARS>")
 }

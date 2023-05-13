@@ -31,6 +31,15 @@ Maskcat (`cat` mask) performs seven (7) functions:
 ```
 go install -v github.com/jakewnuk/maskcat@latest
 ```
+```
+OPTIONS: match sub mutate tokens partial remove
+EXAMPLE: stdin | maskcat match <MASK-FILE>
+EXAMPLE: stdin | maskcat sub <TOKENS-FILE>
+EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>
+EXAMPLE: stdin | maskcat tokens <TOKEN-LEN> (99+ returns all)
+EXAMPLE: stdin | maskcat partial <MASK-CHARS>
+EXAMPLE: stdin | maskcat remove <MASK-CHARS>
+```
 
 ## Making Masks:
 - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
