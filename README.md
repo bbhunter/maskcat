@@ -11,8 +11,6 @@ Maskcat (`cat` mask) performs seven (7) functions:
 - Partially replaces masks from `stdin` by selecting character sets.
 - Removes characters from `stdin` by selecting character sets.
 
-> NOTE: There is no support for `?b` or multi-byte characters at this time.
-
 - For more application examples: [blog post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
 - See also [rulecat](https://github.com/JakeWnuk/rulecat).
 

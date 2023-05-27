@@ -1,5 +1,4 @@
 // Package that contains the primary logic for maskcat and the CLI
-// Note that ?b is not supported at this time
 package main
 
 import (
