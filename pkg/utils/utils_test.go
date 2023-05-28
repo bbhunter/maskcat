@@ -140,3 +140,22 @@ func TestRemoveMaskChars(t *testing.T) {
 		t.Errorf("RemoveMaskChars(%q) = %q; want %q", str, got, want)
 	}
 }
+
+func TestConvertMultiByteString(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"Hello, 世界", "Hello, ?b?b?b?b?b?b"},
+		{"", ""},
+		{"abc", "abc"},
+		{"世", "?b?b?b"},
+	}
+
+	for _, test := range tests {
+		result := ConvertMultiByteString(test.input)
+		if result != test.expected {
+			t.Errorf("ConvertMultiByteString(%q) = %q; want %q", test.input, result, test.expected)
+		}
+	}
+}

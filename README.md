@@ -11,7 +11,11 @@ Maskcat (`cat` mask) performs seven (7) functions:
 - Partially replaces masks from `stdin` by selecting character sets.
 - Removes characters from `stdin` by selecting character sets.
 
-- For more application examples: [blog post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
+> `maskcat` supports multibyte text
+
+For more application examples:
+    - [blog post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
+
 - See also [rulecat](https://github.com/JakeWnuk/rulecat).
 
 ## Getting Started
@@ -33,7 +37,7 @@ go install -v github.com/jakewnuk/maskcat@latest
 OPTIONS: match sub mutate tokens partial remove
 EXAMPLE: stdin | maskcat match <MASK-FILE>
 EXAMPLE: stdin | maskcat sub <TOKENS-FILE>
-EXAMPLE: stdin | maskcat mutate <MAX-TOKEN-LEN>
+EXAMPLE: stdin | maskcat mutate <CHUNK-SIZE>
 EXAMPLE: stdin | maskcat tokens <TOKEN-LEN> (99+ returns all)
 EXAMPLE: stdin | maskcat partial <MASK-CHARS>
 EXAMPLE: stdin | maskcat remove <MASK-CHARS>

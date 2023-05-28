@@ -6,6 +6,9 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode/utf8"
+
+	"github.com/jakewnuk/maskcat/pkg/models"
 )
 
 // ConstructReplacements create an array mapping which characters to replace
@@ -64,13 +67,13 @@ func MakePartialMask(str string, replacements []string) string {
 
 // RemoveMaskChars will replace mask characters in a string with nothing
 func RemoveMaskChars(str string) string {
-	return strings.NewReplacer("?u", "", "?l", "", "?d", "", "?s", "").Replace(str)
+	return strings.NewReplacer("?u", "", "?l", "", "?d", "", "?b", "", "?s", "").Replace(str)
 }
 
 // TestComplexity tests the complexity of an input mask
 func TestComplexity(str string) int {
 	complexity := 0
-	charTypes := []string{"?u", "?l", "?d", "?s"}
+	charTypes := []string{"?u", "?l", "?d", "?s", "?b"}
 	for _, charType := range charTypes {
 		if strings.Contains(str, charType) {
 			complexity++
@@ -90,6 +93,7 @@ func TestEntropy(str string) int {
 		{"?l", 26},
 		{"?d", 10},
 		{"?s", 33},
+		{"?b", 256},
 	}
 	for _, ct := range charTypes {
 		entropy += strings.Count(str, ct.charType) * ct.count
@@ -145,21 +149,29 @@ func ReplaceAtIndex(in string, r rune, i int) string {
 }
 
 // ReplaceWord replaces a mask within an input string with a value
-// The first strings.Replace(-1) will replace endlessly this can be modified
-// for different behavior
 func ReplaceWord(stringword, mask string, value string, replacements []string) string {
 	tokenmask := MakeMask(value, replacements)
+	tokenmask = models.ValidateMask(tokenmask)
+
 	if strings.Contains(mask, tokenmask) {
 		newword := strings.Replace(mask, tokenmask, value, -1)
-		newword = strings.NewReplacer("?u", "?", "?l", "?", "?d", "?", "?s", "?").Replace(newword)
+		newword = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newword)
 
-		for i := range stringword {
+		for i := 0; i < len(stringword); {
+			r, size := utf8.DecodeRuneInString(stringword[i:])
 			if i < len(newword) {
-
 				if newword[i] == '?' {
-					newword = ReplaceAtIndex(newword, rune(stringword[i]), i)
+					newword = ReplaceAtIndex(newword, r, i)
 				}
 			}
+			i += size
+		}
+
+		// NOTE: This introduces a known bug
+		// If the first string contains "?" and a multibyte character the
+		// output is malformed
+		if !strings.Contains(stringword, "?") {
+			newword = strings.ReplaceAll(newword, "?", "")
 		}
 
 		if strings.Contains(newword, value) && newword != value {
@@ -167,6 +179,26 @@ func ReplaceWord(stringword, mask string, value string, replacements []string) s
 		}
 	}
 	return ""
+}
+
+// ConvertMultiByteString converts non-ascii characters to a valid format
+func ConvertMultiByteString(str string) string {
+	returnStr := ""
+	for _, r := range str {
+		if r > 127 {
+			byteArr := []byte(string(r))
+			for j := range byteArr {
+				if j == len(byteArr)-1 {
+					returnStr += fmt.Sprintf("?b")
+				} else {
+					returnStr += fmt.Sprintf("?b")
+				}
+			}
+		} else {
+			returnStr += fmt.Sprintf("%c", r)
+		}
+	}
+	return returnStr
 }
 
 // CheckError is a general error handler
