@@ -10,24 +10,21 @@ Maskcat (`cat` mask) performs seven (7) functions:
 - Generates tokens from `stdin` by removing non-alpha characters.
 - Partially replaces masks from `stdin` by selecting character sets.
 - Removes characters from `stdin` by selecting character sets.
-
-> `maskcat` supports multibyte text
-
-For more application examples:
-    - [blog post](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
-
-- See also [rulecat](https://github.com/JakeWnuk/rulecat).
+- `maskcat` supports multibyte text
+- For more application examples:
+    - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
+- See also [rulecat](https://github.com/JakeWnuk/rulecat)
 
 ## Getting Started
 
 - [Install](#install)
-- [Making Masks](#Making-Masks)
-- [Matching Words to Masks](#Matching-Words-to-Masks)
-- [Substituting Tokens in Words with Masks](#Substituting-Tokens-in-Words-with-Masks)
-- [Mutating Input](#Mutating-Input)
-- [Generating Tokens](#Generating-Tokens)
-- [Partial Masks](#Partial-Masks)
-- [Removing Characters](#Removing-Characters)
+- [Making Masks](#making-masks)
+- [Matching Words to Masks](#matching-words-to-masks)
+- [Substituting Tokens in Words with Masks](#substituting-tokens-in-words-with-masks)
+- [Mutating Input](#mutating-input)
+- [Generating Tokens](#generating-tokens)
+- [Partial Masks](#partial-masks)
+- [Removing Characters](#removing-characters)
 
 ### Install
 ```
