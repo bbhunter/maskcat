@@ -2,14 +2,14 @@
 Maskcat
  </h1>
 
-Maskcat (`cat` mask) performs seven (7) functions:
-- Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
-- Matches words from `stdin` to masks.
-- Substitutes tokens in wordlists using masks.
-- Mutates `stdin` using masks to create new candidates.
-- Generates tokens from `stdin` by removing non-alpha characters.
-- Partially replaces masks from `stdin` by selecting character sets.
-- Removes characters from `stdin` by selecting character sets.
+- Maskcat (`cat` mask) performs seven (7) functions:
+    - Makes Hashcat masks from stdin. Format is `MASK:LENGTH:COMPLEXITY:ENTROPY`.
+    - Matches words from `stdin` to masks.
+    - Substitutes tokens in wordlists using masks.
+    - Mutates `stdin` using masks to create new candidates.
+    - Generates tokens from `stdin` by removing non-alpha characters.
+    - Partially replaces masks from `stdin` by selecting character sets.
+    - Removes characters from `stdin` by selecting character sets.
 - `maskcat` supports multibyte text
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
