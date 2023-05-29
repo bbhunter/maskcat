@@ -23,7 +23,7 @@ func ConstructReplacements(str string) []string {
 	for c := '0'; c <= '9'; c++ {
 		digitArgs = append(digitArgs, string(c), "?d")
 	}
-	specialChars := " !\"#$%&\\()*+,-./:;<=>?@[\\]^_`{|}~"
+	specialChars := " !\"#$%&\\()*+,-./:;<=>?@[\\]^_`{|}~'"
 	specialArgs := make([]string, len(specialChars)*2)
 	for i, c := range specialChars {
 		specialArgs[i*2] = string(c)
