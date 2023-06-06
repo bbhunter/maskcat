@@ -205,6 +205,6 @@ func ConvertMultiByteString(str string) string {
 func CheckError(err error) {
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)
-		os.Exit(0)
+		os.Exit(1)
 	}
 }
