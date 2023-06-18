@@ -6,7 +6,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/jakewnuk/maskcat/pkg/models"
 )
@@ -120,34 +119,6 @@ func ChunkString(s string, chunkSize int) []string {
 	return chunks
 }
 
-// RemoveDuplicateStr removes duplicate strings from array
-func RemoveDuplicateStr(strSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := make([]string, 0, len(strSlice))
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
-}
-
-// ReplaceAtIndex replaces a rune at index in string
-func ReplaceAtIndex(in string, r rune, i int) string {
-	if i < 0 || i >= len(in) {
-		CheckError(fmt.Errorf("index out of range"))
-	}
-	out := []rune(in)
-	if i >= 0 && i < len(out) {
-		out[i] = r
-		// In instances where i is out of bounds go to the end
-	} else if i >= 0 && i == len(out) {
-		out[len(out)-1] = r
-	}
-	return string(out)
-}
-
 // ReplaceWord replaces a mask within an input string with a value
 func ReplaceWord(stringword, mask string, value string, replacements []string) string {
 	tokenmask := MakeMask(value, replacements)
@@ -157,22 +128,16 @@ func ReplaceWord(stringword, mask string, value string, replacements []string) s
 		newword := strings.Replace(mask, tokenmask, value, -1)
 		newword = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newword)
 
-		for i := 0; i < len(stringword); {
-			r, size := utf8.DecodeRuneInString(stringword[i:])
-			if i < len(newword) {
-				if newword[i] == '?' {
-					newword = ReplaceAtIndex(newword, r, i)
-				}
+		var builder strings.Builder
+		builder.Grow(len(newword))
+		for i, r := range newword {
+			if r == '?' && i < len(stringword) {
+				builder.WriteRune(rune(stringword[i]))
+			} else {
+				builder.WriteRune(r)
 			}
-			i += size
 		}
-
-		// NOTE: This introduces a known bug
-		// If the first string contains "?" and a multibyte character the
-		// output is malformed
-		if !strings.Contains(stringword, "?") {
-			newword = strings.ReplaceAll(newword, "?", "")
-		}
+		newword = builder.String()
 
 		if strings.Contains(newword, value) && newword != value {
 			return newword

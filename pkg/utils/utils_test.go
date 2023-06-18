@@ -100,32 +100,12 @@ func TestChunkString(t *testing.T) {
 	}
 }
 
-func TestRemoveDuplicateStr(t *testing.T) {
-	strSlice := []string{"Hello", "World", "Hello", "World"}
-	want := []string{"Hello", "World"}
-	got := RemoveDuplicateStr(strSlice)
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("RemoveDuplicateStr(%q) = %q; want %q", strSlice, got, want)
-	}
-}
-
-func TestReplaceAtIndex(t *testing.T) {
-	in := "Hello, World!"
-	r := 'J'
-	i := 0
-	want := "Jello, World!"
-	got := ReplaceAtIndex(in, r, i)
-	if got != want {
-		t.Errorf("ReplaceAtIndex(%q, %q, %d) = %q; want %q", in, r, i, got, want)
-	}
-}
-
 func TestReplaceWord(t *testing.T) {
-	stringword := "Hello Jello"
+	stringword := "Bello Jello"
 	mask := "?u?l?l?l?l?s?u?l?l?l?l"
 	value := "Hello"
 	replacements := ConstructReplacements("ulds")
-	want := "Hello Hello"
+	want := "Hello Jello"
 	got := ReplaceWord(stringword, mask, value, replacements)
 	if got != want {
 		t.Errorf("ReplaceWord(%q, %q, %q, %q) = %q; want %q", stringword, mask, value, replacements, got, want)

@@ -68,12 +68,12 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 	}()
 
 	filescanner := bufio.NewScanner(buf)
-	var tokens []string
+	tokens := make(map[string]struct{})
 	args := utils.ConstructReplacements("ulds")
 
 	for filescanner.Scan() {
 		if filescanner.Text() != "" {
-			tokens = append(tokens, filescanner.Text())
+			tokens[filescanner.Text()] = struct{}{}
 		}
 
 		if err := filescanner.Err(); err != nil {
@@ -86,7 +86,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 		mask := utils.MakeMask(stdIn.Text(), args)
 		mask = models.ValidateMask(mask)
 
-		for _, value := range tokens {
+		for value := range tokens {
 			newWord := utils.ReplaceWord(stringword, mask, value, args)
 			if newWord != "" {
 				fmt.Println(newWord)
@@ -97,7 +97,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 
 // MutateMasks splits the input strings into chunks and replaces mask characters with the chunks
 func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
-	var tokens []string
+	tokens := make(map[string]struct{})
 	args := utils.ConstructReplacements("ulds")
 
 	if models.IsInt(chunkSizeStr) == false {
@@ -108,22 +108,19 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 		chunksInt, err := strconv.Atoi(chunkSizeStr)
 		utils.CheckError(err)
 		chunks := utils.ChunkString(stdIn.Text(), chunksInt)
-		var achunks []string
+
 		for _, ch := range chunks {
 			if len(ch) == chunksInt {
-				achunks = append(achunks, ch)
+				tokens[ch] = struct{}{}
 			}
 		}
-		tokens = append(tokens, achunks...)
-		tokens = utils.RemoveDuplicateStr(tokens)
 
 		stringword := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
 		mask = models.ValidateMask(mask)
 
-		for _, value := range tokens {
+		for value := range tokens {
 			newWord := utils.ReplaceWord(stringword, mask, value, args)
-
 			if newWord != "" {
 				fmt.Println(newWord)
 			}
