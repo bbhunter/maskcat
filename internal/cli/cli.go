@@ -5,11 +5,12 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"maskcat/pkg/models"
-	"maskcat/pkg/utils"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/jakewnuk/maskcat/pkg/models"
+	"github.com/jakewnuk/maskcat/pkg/utils"
 )
 
 // MatchMasks reads masks from a file and prints any input strings that match one of the masks
@@ -22,7 +23,7 @@ import (
 // Returns:
 //
 //	None
-func MatchMasks(stdIn *bufio.Scanner, infile string) {
+func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -47,7 +48,10 @@ func MatchMasks(stdIn *bufio.Scanner, infile string) {
 
 	for stdIn.Scan() {
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.EnsureValidMask(mask)
+
+		if doMultiByte {
+			mask = models.EnsureValidMask(mask)
+		}
 
 		for _, value := range masks {
 
@@ -73,7 +77,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string) {
 // Returns:
 //
 // None
-func SubMasks(stdIn *bufio.Scanner, infile string) {
+func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfReplacements int) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -101,10 +105,12 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 	for stdIn.Scan() {
 		stringWord := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.EnsureValidMask(mask)
+		if doMultiByte {
+			mask = models.EnsureValidMask(mask)
+		}
 
 		for value := range tokens {
-			newWord := utils.ReplaceWord(stringWord, mask, value, args)
+			newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
 			if newWord != "" {
 				fmt.Println(newWord)
 			}
@@ -122,7 +128,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 // Returns:
 //
 // None
-func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
+func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doNumberOfReplacements int) {
 	tokens := make(map[string]struct{})
 	args := utils.ConstructReplacements("ulds")
 
@@ -143,10 +149,12 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 
 		stringWord := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.EnsureValidMask(mask)
+		if doMultiByte {
+			mask = models.EnsureValidMask(mask)
+		}
 
 		for value := range tokens {
-			newWord := utils.ReplaceWord(stringWord, mask, value, args)
+			newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
 			if newWord != "" {
 				fmt.Println(newWord)
 			}
@@ -250,16 +258,43 @@ func GeneratePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string) {
 // Returns:
 //
 // None
-func GenerateMasks(stdIn *bufio.Scanner) {
+func GenerateMasks(stdIn *bufio.Scanner, doMultiByte bool, verbose bool) {
 	args := utils.ConstructReplacements("ulds")
 	for stdIn.Scan() {
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.EnsureValidMask(mask)
-		fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
+		if doMultiByte {
+			mask = models.EnsureValidMask(mask)
+		}
+		if verbose {
+			fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
+		} else {
+			fmt.Printf("%s\n", mask)
+		}
 	}
 
 	if err := stdIn.Err(); err != nil {
 		CheckError(err)
+	}
+}
+
+// CheckIfArgExists checks an argument at a postion to see if it exists
+//
+// Args:
+//
+//	index (int): Index to check
+//	args ([]string): Array of arguments
+//
+// Returns:
+//
+//	(bool): If the index exists
+func CheckIfArgExists(index int, args []string) {
+	exists := false
+	if len(args) > index {
+		exists = true
+	}
+
+	if !exists {
+		CheckError(fmt.Errorf("Not enough arguments provided"))
 	}
 }
 

@@ -31,13 +31,37 @@ Maskcat
 go install -v github.com/jakewnuk/maskcat@latest
 ```
 ```
-OPTIONS: match sub mutate tokens partial remove
-EXAMPLE: stdin | maskcat match <MASK-FILE>
-EXAMPLE: stdin | maskcat sub <TOKENS-FILE>
-EXAMPLE: stdin | maskcat mutate <CHUNK-SIZE>
-EXAMPLE: stdin | maskcat tokens <TOKEN-LEN> (99+ returns all)
-EXAMPLE: stdin | maskcat partial <MASK-CHARS>
-EXAMPLE: stdin | maskcat remove <MASK-CHARS>
+Options for maskcat (version 2.0.0):
+  -m    Process multibyte text (warning: slows processes)
+        Example: maskcat [MODE] -m
+  -n int
+        Max number of replacements to make per item (default: 1)
+        Example: maskcat [MODE] -n 1 (default 1)
+  -v    Show verbose information about masks
+        Example: maskcat [MODE] -v
+
+Modes for maskcat (version 2.0.0):
+
+  mask          Creates masks from text
+                Example: stdin | maskcat mask [OPTIONS]
+
+  match         Matches text to masks
+                Example: stdin | maskcat match [MASK-FILE] [OPTIONS]
+
+  sub           Replaces text with text from a file with masks
+                Example: stdin | maskcat sub [TOKENS-FILE] [OPTIONS]
+
+  mutate        Mutates text by using chunking and token swapping
+                Example: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]
+
+  tokens        Splits text into chunks by length (values over 99 allow all)
+                Example: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]
+
+  partial       Partially replaces characters with mask characters
+                Example: stdin | maskcat partial [MASK-CHARS] [OPTIONS]
+
+  remove        Removes characters that match given mask characters
+                Example: stdin | maskcat remove [MASK-CHARS] [OPTIONS]
 ```
 
 ## Making Masks:
