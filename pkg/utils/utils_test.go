@@ -62,16 +62,6 @@ func TestMakeToken(t *testing.T) {
 	}
 }
 
-func TestMakePartialMask(t *testing.T) {
-	str := "Hello, World1!"
-	replacements := ConstructReplacements("uds")
-	want := "?uello?s?s?uorld?d?s"
-	got := MakePartialMask(str, replacements)
-	if got != want {
-		t.Errorf("MakePartialMask(%q, %q) = %q; want %q", str, replacements, got, want)
-	}
-}
-
 func TestTestComplexity(t *testing.T) {
 	str := "?u?l?l?l?l?s?s?u?l?l?l?l?d?s"
 	want := 4
@@ -101,41 +91,22 @@ func TestChunkString(t *testing.T) {
 }
 
 func TestReplaceWord(t *testing.T) {
-	stringword := "Bello Jello"
-	mask := "?u?l?l?l?l?s?u?l?l?l?l"
+	stringword := "Bello Jello Mello"
+	mask := "?u?l?l?l?l?s?u?l?l?l?l?s?u?l?l?l?l"
 	value := "Hello"
 	replacements := ConstructReplacements("ulds")
-	want := "Hello Jello"
+	want := "Hello Jello Mello"
 	got := ReplaceWord(stringword, mask, value, replacements)
 	if got != want {
-		t.Errorf("ReplaceWord(%q, %q, %q, %q) = %q; want %q", stringword, mask, value, replacements, got, want)
+		t.Errorf("ReplaceWord(%q, %q, %q) = %q; want %q", stringword, mask, value, got, want)
 	}
 }
 
 func TestRemoveMaskChars(t *testing.T) {
 	str := "?u?l?d?s"
 	want := ""
-	got := RemoveMaskChars(str)
+	got := RemoveMaskCharacters(str)
 	if got != want {
 		t.Errorf("RemoveMaskChars(%q) = %q; want %q", str, got, want)
-	}
-}
-
-func TestConvertMultiByteString(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected string
-	}{
-		{"Hello, 世界", "Hello, ?b?b?b?b?b?b"},
-		{"", ""},
-		{"abc", "abc"},
-		{"世", "?b?b?b"},
-	}
-
-	for _, test := range tests {
-		result := ConvertMultiByteString(test.input)
-		if result != test.expected {
-			t.Errorf("ConvertMultiByteString(%q) = %q; want %q", test.input, result, test.expected)
-		}
 	}
 }

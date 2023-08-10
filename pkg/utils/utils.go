@@ -1,9 +1,12 @@
-// Package utils contains functions for the main maskcat program
+// Package utils contains functions for the main program
+//
+// The package structure is broken into two components:
+//
+// utils.go which contains the primary logic
+// utils_test.go which contains unit tests
 package utils
 
 import (
-	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
@@ -11,6 +14,20 @@ import (
 )
 
 // ConstructReplacements create an array mapping which characters to replace
+//
+// This function accepts the characters "ulds" in order to generate a map
+// - u for uppercase characters
+// - l for lowercase characters
+// - d for numerical characters
+// - s for special characters
+//
+// Args:
+//
+//	str (string): Input string
+//
+// Returns:
+//
+//	args ([]string): Map of replacement characters
 func ConstructReplacements(str string) []string {
 	var lowerArgs, upperArgs, digitArgs, args []string
 	for c := 'a'; c <= 'z'; c++ {
@@ -48,28 +65,56 @@ func ConstructReplacements(str string) []string {
 	return args
 }
 
-// MakeMask performs substitution to make HC masks
+// MakeMask performs substitution to make masks
+//
+// Args:
+//
+//	str (string): String to turn into a mask
+//	replacements ([]string): Map of which characters to replace
+//
+// Returns:
+//
+//	(string): Replaced string as a mask
 func MakeMask(str string, replacements []string) string {
 	return strings.NewReplacer(replacements...).Replace(str)
 }
 
-// MakeToken replaces all non-alpha characters to generate tokens
+// MakeToken replaces all non-alpha characters to generate string tokens
+//
+// Args:
+//
+//	str (string): Input string
+//
+// Returns:
+//
+//	(string): String with only alpha characters
 func MakeToken(str string) string {
 	re := regexp.MustCompile(`[^a-zA-Z]+`)
 	return re.ReplaceAllString(str, "")
 }
 
-// MakePartialMask creates a partial Hashcat mask
-func MakePartialMask(str string, replacements []string) string {
-	return strings.NewReplacer(replacements...).Replace(str)
-}
-
-// RemoveMaskChars will replace mask characters in a string with nothing
-func RemoveMaskChars(str string) string {
+// RemoveMaskCharacters will replace mask characters in a string with nothing
+//
+// Args:
+//
+//	str (string): Input string to replace
+//
+// Returns:
+//
+//	(string): String with replaced characters
+func RemoveMaskCharacters(str string) string {
 	return strings.NewReplacer("?u", "", "?l", "", "?d", "", "?b", "", "?s", "").Replace(str)
 }
 
 // TestComplexity tests the complexity of an input mask
+//
+// Args:
+//
+//	str (string): Input string to test
+//
+// Returns:
+//
+//	(int): Complexity score as an integer
 func TestComplexity(str string) int {
 	complexity := 0
 	charTypes := []string{"?u", "?l", "?d", "?s", "?b"}
@@ -81,7 +126,15 @@ func TestComplexity(str string) int {
 	return complexity
 }
 
-// TestEntropy calculates mask entropy
+// TestEntropy calculates mask entropy of an input mask
+//
+// Args:
+//
+//	str (string): Input string to test
+//
+// Returns:
+//
+//	(int): Entropy score as an integer
 func TestEntropy(str string) int {
 	entropy := 0
 	charTypes := []struct {
@@ -100,76 +153,68 @@ func TestEntropy(str string) int {
 	return entropy
 }
 
-// ChunkString splits string into chunks
-func ChunkString(s string, chunkSize int) []string {
-	if len(s) == 0 {
+// ChunkString splits string into chunks of a given size
+//
+// Args:
+//
+//	str (string): Input string to split
+//	chunkSize (int): Chunk size to split
+//
+// Returns:
+//
+//	chunks ([]string): Map of chunked string
+func ChunkString(str string, chunkSize int) []string {
+	if len(str) == 0 {
 		return nil
 	}
-	if chunkSize >= len(s) {
-		return []string{s}
+	if chunkSize >= len(str) {
+		return []string{str}
 	}
 	var chunks []string
-	for i := 0; i < len(s); i += chunkSize {
+	for i := 0; i < len(str); i += chunkSize {
 		end := i + chunkSize
-		if end > len(s) {
-			end = len(s)
+		if end > len(str) {
+			end = len(str)
 		}
-		chunks = append(chunks, s[i:end])
+		chunks = append(chunks, str[i:end])
 	}
 	return chunks
 }
 
-// ReplaceWord replaces a mask within an input string with a value
-func ReplaceWord(stringword, mask string, value string, replacements []string) string {
+// ReplaceWord replaces a mask within an input string with a provided value
+//
+// Args:
+//
+//	word (string): Word to make replacements in
+//	mask (string): Mask of the word
+//	value (string): String to replace into the word
+//	replacements ([]string): Replacement array used for the value parameter
+//
+// Returns:
+//
+//	newWord (string): Replaced word with value
+func ReplaceWord(word string, mask string, value string, replacements []string) string {
 	tokenmask := MakeMask(value, replacements)
-	tokenmask = models.ValidateMask(tokenmask)
+	tokenmask = models.EnsureValidMask(tokenmask)
 
 	if strings.Contains(mask, tokenmask) {
-		newword := strings.Replace(mask, tokenmask, value, -1)
-		newword = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newword)
+		newWord := strings.Replace(mask, tokenmask, value, 1)
+		newWord = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newWord)
 
 		var builder strings.Builder
-		builder.Grow(len(newword))
-		for i, r := range newword {
-			if r == '?' && i < len(stringword) {
-				builder.WriteRune(rune(stringword[i]))
+		builder.Grow(len(newWord))
+		for i, r := range newWord {
+			if r == '?' && i < len(word) {
+				builder.WriteRune(rune(word[i]))
 			} else {
 				builder.WriteRune(r)
 			}
 		}
-		newword = builder.String()
+		newWord = builder.String()
 
-		if strings.Contains(newword, value) && newword != value {
-			return newword
+		if strings.Contains(newWord, value) && newWord != value {
+			return newWord
 		}
 	}
 	return ""
-}
-
-// ConvertMultiByteString converts non-ascii characters to a valid format
-func ConvertMultiByteString(str string) string {
-	returnStr := ""
-	for _, r := range str {
-		if r > 127 {
-			byteArr := []byte(string(r))
-			for j := range byteArr {
-				if j == len(byteArr)-1 {
-					returnStr += fmt.Sprintf("?b")
-				} else {
-					returnStr += fmt.Sprintf("?b")
-				}
-			}
-		} else {
-			returnStr += fmt.Sprintf("%c", r)
-		}
-	}
-	return returnStr
-}
-
-// CheckError is a general error handler
-func CheckError(err error) {
-	if err != nil {
-		fmt.Printf("ERROR: %s\n", err)
-		os.Exit(1)
-	}
 }

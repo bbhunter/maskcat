@@ -1,4 +1,9 @@
 // Package models holds all of the data structures and validations
+//
+// The package structure is broken into two components:
+//
+// models.go which contains the primary logic
+// models_test.go which contains unit tests
 package models
 
 import (
@@ -7,8 +12,16 @@ import (
 	"unicode/utf8"
 )
 
-// IsMask tests a string to see if it is a valid mask
-func IsMask(mask string) bool {
+// IsHashMask tests a string to see if it contains only mask characters
+//
+// Args:
+//
+//	mask (string): The input string
+//
+// Returns:
+//
+//	(bool): If the string is a valid mask
+func IsHashMask(mask string) bool {
 	var IsMask = regexp.MustCompile(`^[uldsb?]+$`).MatchString
 	if IsMask(mask) == false {
 		return false
@@ -16,17 +29,16 @@ func IsMask(mask string) bool {
 	return true
 }
 
-// IsMaskChars tests a string to see if it only contains valid mask characters
-func IsMaskChars(ch string) bool {
-	var IsMaskChars = regexp.MustCompile(`^[uldsb]+$`).MatchString
-	if IsMaskChars(ch) == false {
-		return false
-	}
-	return true
-}
-
-// IsInt tests a string to see if it only contains numerical characters
-func IsInt(str string) bool {
+// IsStringInt tests a string to see if it only contains numerical characters
+//
+// Args:
+//
+//	str (string): The input string
+//
+// Returns:
+//
+//	(bool) : If the string is a valid integer
+func IsStringInt(str string) bool {
 	var IsInt = regexp.MustCompile(`^[0-9]+$`).MatchString
 	if IsInt(str) == false {
 		return false
@@ -34,8 +46,16 @@ func IsInt(str string) bool {
 	return true
 }
 
-// IsAlpha tests a string to see if it only contains alpha characters
-func IsAlpha(str string) bool {
+// IsStringAlpha tests a string to see if it only contains alpha characters
+//
+// Args:
+//
+//	str (string): The input string
+//
+// Returns:
+//
+//	(bool) : If the string is a valid alpha only
+func IsStringAlpha(str string) bool {
 	var IsToken = regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString
 	if IsToken(str) == false {
 		return false
@@ -43,19 +63,36 @@ func IsAlpha(str string) bool {
 	return true
 }
 
-// CheckASCIIString checks to see if a string only contains ascii characters
-func CheckASCIIString(str string) bool {
+// IsStringASCII checks to see if a string only contains ASCII characters
+//
+// Args:
+//
+//	str (string): The input string
+//
+// Returns:
+//
+//	(bool) : If the string is a valid ASCII only
+func IsStringASCII(str string) bool {
 	if utf8.RuneCountInString(str) != len(str) {
 		return false
 	}
 	return true
 }
 
-// ValidateMask checks if a string is a valid mask
-// If not attempts to convert multibyte chars to a valid mask
-func ValidateMask(mask string) string {
-	if IsMask(mask) == false {
-		if !CheckASCIIString(mask) {
+// EnsureValidMask checks if a string is a valid mask and transforms it if not
+//
+// # Used by the application to convert multibyte chars to a valid mask
+//
+// Args:
+//
+//	mask (string): Input string as a mask
+//
+// Return:
+//
+//	mask (string): Valid mask string
+func EnsureValidMask(mask string) string {
+	if IsHashMask(mask) == false {
+		if !IsStringASCII(mask) {
 			mask = ConvertMultiByteString(mask)
 		}
 	}
@@ -63,6 +100,14 @@ func ValidateMask(mask string) string {
 }
 
 // ConvertMultiByteString converts non-ascii characters to a valid format
+//
+// Args:
+//
+//	str (string): Input string
+//
+// Returns:
+//
+//	returnStr (string): Converted string
 func ConvertMultiByteString(str string) string {
 	returnStr := ""
 	for _, r := range str {

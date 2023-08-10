@@ -2,7 +2,7 @@ package models
 
 import "testing"
 
-func TestIsMask(t *testing.T) {
+func TestIsHashMask(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected bool
@@ -14,33 +14,14 @@ func TestIsMask(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := IsMask(test.input)
+		result := IsHashMask(test.input)
 		if result != test.expected {
 			t.Errorf("IsMask(%q) = %v; want %v", test.input, result, test.expected)
 		}
 	}
 }
 
-func TestIsMaskChars(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected bool
-	}{
-		{"uldsb", true},
-		{"", false},
-		{"abc", false},
-		{"uldsb?", false},
-	}
-
-	for _, test := range tests {
-		result := IsMaskChars(test.input)
-		if result != test.expected {
-			t.Errorf("IsMaskChars(%q) = %v; want %v", test.input, result, test.expected)
-		}
-	}
-}
-
-func TestIsInt(t *testing.T) {
+func TestIsStringInt(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected bool
@@ -52,14 +33,14 @@ func TestIsInt(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := IsInt(test.input)
+		result := IsStringInt(test.input)
 		if result != test.expected {
 			t.Errorf("IsInt(%q) = %v; want %v", test.input, result, test.expected)
 		}
 	}
 }
 
-func TestIsAlpha(t *testing.T) {
+func TestIsStringAlpha(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected bool
@@ -71,14 +52,14 @@ func TestIsAlpha(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := IsAlpha(test.input)
+		result := IsStringAlpha(test.input)
 		if result != test.expected {
 			t.Errorf("IsAlpha(%q) = %v; want %v", test.input, result, test.expected)
 		}
 	}
 }
 
-func TestCheckASCIIString(t *testing.T) {
+func TestIsStringASCII(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected bool
@@ -90,14 +71,14 @@ func TestCheckASCIIString(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := CheckASCIIString(test.input)
+		result := IsStringASCII(test.input)
 		if result != test.expected {
 			t.Errorf("CheckASCIIString(%q) = %v; want %v", test.input, result, test.expected)
 		}
 	}
 }
 
-func TestValidateMask(t *testing.T) {
+func TestEnsureValidMask(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected string
@@ -109,7 +90,7 @@ func TestValidateMask(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := ValidateMask(test.input)
+		result := EnsureValidMask(test.input)
 		if result != test.expected {
 			t.Errorf("ValidateMask(%q) = %q; want %q", test.input, result, test.expected)
 		}

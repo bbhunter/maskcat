@@ -1,22 +1,30 @@
-// Package cmd that contains the primary CLI logic for maskcat
-package cmd
+// Package cli contains logic for operating the cli tool
+package cli
 
 import (
 	"bufio"
 	"errors"
 	"fmt"
+	"maskcat/pkg/models"
+	"maskcat/pkg/utils"
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/jakewnuk/maskcat/pkg/models"
-	"github.com/jakewnuk/maskcat/pkg/utils"
 )
 
 // MatchMasks reads masks from a file and prints any input strings that match one of the masks
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	infile (string): File path of input file to use
+//
+// Returns:
+//
+//	None
 func MatchMasks(stdIn *bufio.Scanner, infile string) {
 	buf, err := os.Open(infile)
-	utils.CheckError(err)
+	CheckError(err)
 
 	defer func() {
 		if err = buf.Close(); err != nil {
@@ -30,7 +38,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string) {
 	args := utils.ConstructReplacements("ulds")
 
 	for filescanner.Scan() {
-		if models.IsMask(filescanner.Text()) == false {
+		if models.IsHashMask(filescanner.Text()) == false {
 			fmt.Println("[SKIP] Input mask contains non-mask characters: ", filescanner.Text())
 			continue
 		}
@@ -39,7 +47,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string) {
 
 	for stdIn.Scan() {
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.ValidateMask(mask)
+		mask = models.EnsureValidMask(mask)
 
 		for _, value := range masks {
 
@@ -49,16 +57,25 @@ func MatchMasks(stdIn *bufio.Scanner, infile string) {
 			}
 
 			if err := stdIn.Err(); err != nil {
-				fmt.Fprintln(os.Stderr, "reading standard input:", err)
+				CheckError(err)
 			}
 		}
 	}
 }
 
 // SubMasks reads tokens from a file and replaces mask characters in the input strings with the tokens
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	infile (string): File path of input file to use
+//
+// Returns:
+//
+// None
 func SubMasks(stdIn *bufio.Scanner, infile string) {
 	buf, err := os.Open(infile)
-	utils.CheckError(err)
+	CheckError(err)
 
 	defer func() {
 		if err = buf.Close(); err != nil {
@@ -77,17 +94,17 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 		}
 
 		if err := filescanner.Err(); err != nil {
-			fmt.Fprintln(os.Stderr, "reading standard input:", err)
+			CheckError(err)
 		}
 	}
 
 	for stdIn.Scan() {
-		stringword := stdIn.Text()
+		stringWord := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.ValidateMask(mask)
+		mask = models.EnsureValidMask(mask)
 
 		for value := range tokens {
-			newWord := utils.ReplaceWord(stringword, mask, value, args)
+			newWord := utils.ReplaceWord(stringWord, mask, value, args)
 			if newWord != "" {
 				fmt.Println(newWord)
 			}
@@ -96,17 +113,26 @@ func SubMasks(stdIn *bufio.Scanner, infile string) {
 }
 
 // MutateMasks splits the input strings into chunks and replaces mask characters with the chunks
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	chunkSizeStr (string): Size of the chunks as a number
+//
+// Returns:
+//
+// None
 func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 	tokens := make(map[string]struct{})
 	args := utils.ConstructReplacements("ulds")
 
-	if models.IsInt(chunkSizeStr) == false {
-		utils.CheckError(errors.New("Invalid Chunk Size"))
+	if models.IsStringInt(chunkSizeStr) == false {
+		CheckError(errors.New("Invalid Chunk Size"))
 	}
 
 	for stdIn.Scan() {
 		chunksInt, err := strconv.Atoi(chunkSizeStr)
-		utils.CheckError(err)
+		CheckError(err)
 		chunks := utils.ChunkString(stdIn.Text(), chunksInt)
 
 		for _, ch := range chunks {
@@ -115,12 +141,12 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 			}
 		}
 
-		stringword := stdIn.Text()
+		stringWord := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.ValidateMask(mask)
+		mask = models.EnsureValidMask(mask)
 
 		for value := range tokens {
-			newWord := utils.ReplaceWord(stringword, mask, value, args)
+			newWord := utils.ReplaceWord(stringWord, mask, value, args)
 			if newWord != "" {
 				fmt.Println(newWord)
 			}
@@ -129,19 +155,28 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string) {
 }
 
 // GenerateTokens generates tokens from the input strings by removing all non-alpha characters
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	lengthStr (string): Length of the tokens as a number
+//
+// Returns:
+//
+// None
 func GenerateTokens(stdIn *bufio.Scanner, lengthStr string) {
-	if models.IsInt(lengthStr) == false {
-		utils.CheckError(errors.New("Invalid String Size"))
+	if models.IsStringInt(lengthStr) == false {
+		CheckError(errors.New("Invalid String Size"))
 	}
 
 	for stdIn.Scan() {
 		token := utils.MakeToken(stdIn.Text())
-		if models.IsAlpha(token) == false {
+		if models.IsStringAlpha(token) == false {
 			continue
 		}
 
 		length, err := strconv.Atoi(lengthStr)
-		utils.CheckError(err)
+		CheckError(err)
 
 		// NOTE: VALUES OVER 99 LET ALL THROUGH
 		if len(token) != length && length < 98 {
@@ -153,15 +188,24 @@ func GenerateTokens(stdIn *bufio.Scanner, lengthStr string) {
 }
 
 // GeneratePartialMasks generates partial masks from the input strings using the specified mask characters
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	maskChars (string): String of which character sets to replace (udlsb)
+//
+// Returns:
+//
+// None
 func GeneratePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 	args := utils.ConstructReplacements(maskChars)
 
-	if models.IsMaskChars(maskChars) == false {
-		utils.CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
+	if models.IsHashMask(maskChars) == false {
+		CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
 	}
 
 	for stdIn.Scan() {
-		partial := utils.MakePartialMask(stdIn.Text(), args)
+		partial := utils.MakeMask(stdIn.Text(), args)
 		if strings.Contains(maskChars, "b") {
 			partial = models.ConvertMultiByteString(partial)
 		}
@@ -170,33 +214,59 @@ func GeneratePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 }
 
 // GeneratePartialRemoveMasks removes characters in masks from the input strings using the specified mask characters
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	infile (string): File path of input file to use
+//	maskChars (string): String of which character sets to replace (udlsb)
+//
+// Returns:
+//
+// None
 func GeneratePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string) {
 	args := utils.ConstructReplacements(maskChars)
 
-	if models.IsMaskChars(maskChars) == false {
-		utils.CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
+	if models.IsHashMask(maskChars) == false {
+		CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
 	}
 
 	for stdIn.Scan() {
-		partial := utils.MakePartialMask(stdIn.Text(), args)
+		partial := utils.MakeMask(stdIn.Text(), args)
 		if strings.Contains(maskChars, "b") {
 			partial = models.ConvertMultiByteString(partial)
 		}
-		remaining := utils.RemoveMaskChars(partial)
+		remaining := utils.RemoveMaskCharacters(partial)
 		fmt.Printf("%s\n", remaining)
 	}
 }
 
 // GenerateMasks generates masks from the input strings and prints information about the masks
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//
+// Returns:
+//
+// None
 func GenerateMasks(stdIn *bufio.Scanner) {
 	args := utils.ConstructReplacements("ulds")
 	for stdIn.Scan() {
 		mask := utils.MakeMask(stdIn.Text(), args)
-		mask = models.ValidateMask(mask)
+		mask = models.EnsureValidMask(mask)
 		fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
 	}
 
 	if err := stdIn.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+		CheckError(err)
+	}
+}
+
+// CheckError is a general error handler
+func CheckError(err error) {
+	if err != nil {
+		fmt.Printf("ERROR: %s\n", err)
+		os.Exit(1)
 	}
 }
