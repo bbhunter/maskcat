@@ -1,3 +1,3 @@
-module github.com/JakeWnuk/maskcat
+module github.com/jakewnuk/maskcat
 
 go 1.21
