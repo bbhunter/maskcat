@@ -31,6 +31,9 @@ Maskcat
 go install -v github.com/jakewnuk/maskcat@latest
 ```
 ```
+git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat
+```
+```
 Options for maskcat (version 2.0.0):
   -m    Process multibyte text (warning: slows processes)
         Example: maskcat [MODE] -m
