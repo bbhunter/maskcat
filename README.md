@@ -27,9 +27,11 @@ Maskcat
 - [Removing Characters](#removing-characters)
 
 ### Install
+#### Go
 ```
-go install -v github.com/jakewnuk/maskcat@latest
+go install -v github.com/jakewnuk/maskcat/cmd/maskcat@latest
 ```
+#### Source
 ```
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat
 ```
