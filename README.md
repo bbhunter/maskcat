@@ -29,11 +29,13 @@ Maskcat
 ### Install
 #### Go
 ```
+# known issue where 2.0.0 is not pulling
 go install -v github.com/jakewnuk/maskcat/cmd/maskcat@latest
 ```
 #### Source
 ```
-git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat
+git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
+
 ```
 ```
 Options for maskcat (version 2.0.0):
