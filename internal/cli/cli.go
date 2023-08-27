@@ -178,20 +178,22 @@ func GenerateTokens(stdIn *bufio.Scanner, lengthStr string) {
 	}
 
 	for stdIn.Scan() {
-		token := utils.MakeToken(stdIn.Text())
-		if models.IsStringAlpha(token) == false {
-			continue
+		tokens := utils.MakeToken(stdIn.Text())
+		for _, token := range tokens {
+			if models.IsStringAlpha(token) == false {
+				continue
+			}
+
+			length, err := strconv.Atoi(lengthStr)
+			CheckError(err)
+
+			// NOTE: VALUES OVER 99 LET ALL THROUGH
+			if len(token) != length && length < 98 {
+				continue
+			}
+
+			fmt.Printf("%s\n", token)
 		}
-
-		length, err := strconv.Atoi(lengthStr)
-		CheckError(err)
-
-		// NOTE: VALUES OVER 99 LET ALL THROUGH
-		if len(token) != length && length < 98 {
-			continue
-		}
-
-		fmt.Printf("%s\n", token)
 	}
 }
 

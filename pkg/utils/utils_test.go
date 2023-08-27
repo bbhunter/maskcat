@@ -54,10 +54,10 @@ func TestMakeMask(t *testing.T) {
 }
 
 func TestMakeToken(t *testing.T) {
-	str := "Hello, World1!"
-	want := "HelloWorld"
+	str := "ThisApple123OfMine"
+	want := []string{"This", "Apple", "123", "Of", "Mine"}
 	got := MakeToken(str)
-	if got != want {
+	if !reflect.DeepEqual(got, want) {
 		t.Errorf("MakeToken(%q) = %q; want %q", str, got, want)
 	}
 }

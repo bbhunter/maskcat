@@ -81,7 +81,10 @@ func MakeMask(str string, replacements []string) string {
 	return strings.NewReplacer(replacements...).Replace(str)
 }
 
-// MakeToken replaces all non-alpha characters to generate string tokens
+// MakeToken parses out tokens into an array
+//   - Parses out camel case
+//   - Parses out digit boundaries
+//   - Parses out special char boundaries
 //
 // Args:
 //
@@ -89,10 +92,16 @@ func MakeMask(str string, replacements []string) string {
 //
 // Returns:
 //
-//	(string): String with only alpha characters
-func MakeToken(str string) string {
-	re := regexp.MustCompile(`[^a-zA-Z]+`)
-	return re.ReplaceAllString(str, "")
+//	array ([]string): Tokens from input string
+func MakeToken(str string) []string {
+	re1 := regexp.MustCompile(`[A-Z][a-z]*|\d+|[^\dA-Z]+`)
+	preArray := re1.FindAllString(str, -1)
+	re2 := regexp.MustCompile(`[A-Z][a-z]*|\d+|\W+|\w+`)
+	array := []string{}
+	for _, s := range preArray {
+		array = append(array, re2.FindAllString(s, -1)...)
+	}
+	return array
 }
 
 // RemoveMaskCharacters will replace mask characters in a string with nothing
