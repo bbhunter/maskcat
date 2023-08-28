@@ -101,6 +101,8 @@ func MakeToken(str string) []string {
 	for _, s := range preArray {
 		array = append(array, re2.FindAllString(s, -1)...)
 	}
+	re3 := regexp.MustCompile(`[^a-zA-Z]+`)
+	array = append(array, re3.ReplaceAllString(str, ""))
 	return array
 }
 
