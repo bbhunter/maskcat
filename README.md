@@ -190,21 +190,30 @@ ms.navit6
 ```
 
 ## Generating Tokens
-- Generates tokens from `stdin` by removing non-alpha characters.
+- Generates tokens from `stdin` by parsing using several methods.
+- Accepts an integer value to filter for token length based on the provided input.
 
 ### How does it work?
-- Token generation replaces all digit and special characters within a string then filters for token length based on the provided input.
+- Token generation replaces all digit and special characters within a string.
+- Token generation find and splits camel casing.
+- Token generation find and splits special and digit boundaries.
 ```
 $ cat list.tmp
 Password123
 NotAPassword456
 
 # Fetches all 8 length strings
-$ echo 'Password123' | maskcat tokens 8
+$ cat list.tmp | maskcat tokens 8
+Password
+Password
 Password
 
 # If value is above 99 all tokens are allowed
-$ echo 'Password123' | maskcat tokens 99
+$ cat list.tmp | maskcat tokens 99
+Password
+Password
+Not
+A
 Password
 NotAPassword
 ```
