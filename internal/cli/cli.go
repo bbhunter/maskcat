@@ -162,7 +162,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 //
 // None
 func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doNumberOfReplacements int) {
-	tokens := make(map[string]struct{})
+	var tokens sync.Map
 	args := utils.ConstructReplacements("ulds")
 
 	if models.IsStringInt(chunkSizeStr) == false {
@@ -179,7 +179,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 
 		for _, ch := range chunks {
 			if len(ch) == chunksInt {
-				tokens[ch] = struct{}{}
+				tokens.Store(ch, struct{}{})
 			}
 		}
 
@@ -193,12 +193,13 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 		go func() {
 			defer wg.Done()
 
-			for value := range tokens {
-				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
+			tokens.Range(func(key, value interface{}) bool {
+				newWord := utils.ReplaceWord(stringWord, mask, key.(string), args, doNumberOfReplacements)
 				if newWord != "" {
 					results <- newWord
 				}
-			}
+				return true
+			})
 		}()
 	}
 
