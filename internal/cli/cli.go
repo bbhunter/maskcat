@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/jakewnuk/maskcat/pkg/models"
 	"github.com/jakewnuk/maskcat/pkg/utils"
@@ -46,6 +47,9 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 		masks = append(masks, filescanner.Text())
 	}
 
+	results := make(chan string)
+	var wg sync.WaitGroup
+
 	for stdIn.Scan() {
 		mask := utils.MakeMask(stdIn.Text(), args)
 
@@ -53,17 +57,30 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 			mask = models.EnsureValidMask(mask)
 		}
 
-		for _, value := range masks {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, value := range masks {
 
-			if mask == value {
-				fmt.Println(stdIn.Text())
-				break
-			}
+				if mask == value {
+					results <- stdIn.Text()
+					break
+				}
 
-			if err := stdIn.Err(); err != nil {
-				CheckError(err)
+				if err := stdIn.Err(); err != nil {
+					CheckError(err)
+				}
 			}
-		}
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	for result := range results {
+		fmt.Println(result)
 	}
 }
 
@@ -102,6 +119,9 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 		}
 	}
 
+	results := make(chan string)
+	var wg sync.WaitGroup
+
 	for stdIn.Scan() {
 		stringWord := stdIn.Text()
 		mask := utils.MakeMask(stdIn.Text(), args)
@@ -109,12 +129,25 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 			mask = models.EnsureValidMask(mask)
 		}
 
-		for value := range tokens {
-			newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
-			if newWord != "" {
-				fmt.Println(newWord)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for value := range tokens {
+				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
+				if newWord != "" {
+					results <- newWord
+				}
 			}
-		}
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	for result := range results {
+		fmt.Println(result)
 	}
 }
 
@@ -136,6 +169,9 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 		CheckError(errors.New("Invalid Chunk Size"))
 	}
 
+	results := make(chan string)
+	var wg sync.WaitGroup
+
 	for stdIn.Scan() {
 		chunksInt, err := strconv.Atoi(chunkSizeStr)
 		CheckError(err)
@@ -153,12 +189,26 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 			mask = models.EnsureValidMask(mask)
 		}
 
-		for value := range tokens {
-			newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
-			if newWord != "" {
-				fmt.Println(newWord)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			for value := range tokens {
+				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
+				if newWord != "" {
+					results <- newWord
+				}
 			}
-		}
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	for result := range results {
+		fmt.Println(result)
 	}
 }
 
