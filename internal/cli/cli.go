@@ -169,7 +169,6 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 		CheckError(errors.New("Invalid Chunk Size"))
 	}
 
-	results := make(chan string)
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
@@ -196,21 +195,13 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 			tokens.Range(func(key, value interface{}) bool {
 				newWord := utils.ReplaceWord(stringWord, mask, key.(string), args, doNumberOfReplacements)
 				if newWord != "" {
-					results <- newWord
+					fmt.Println(newWord)
 				}
 				return true
 			})
 		}()
 	}
-
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
-
-	for result := range results {
-		fmt.Println(result)
-	}
+	wg.Wait()
 }
 
 // GenerateTokens generates tokens from the input strings by removing all non-alpha characters
