@@ -47,7 +47,6 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 		masks = append(masks, filescanner.Text())
 	}
 
-	results := make(chan string)
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
@@ -63,7 +62,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 			for _, value := range masks {
 
 				if mask == value {
-					results <- stdIn.Text()
+					fmt.Println(stdIn.Text())
 					break
 				}
 
@@ -73,15 +72,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 			}
 		}()
 	}
-
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
-
-	for result := range results {
-		fmt.Println(result)
-	}
+	wg.Wait()
 }
 
 // SubMasks reads tokens from a file and replaces mask characters in the input strings with the tokens
@@ -119,7 +110,6 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 		}
 	}
 
-	results := make(chan string)
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
@@ -135,20 +125,12 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 			for value := range tokens {
 				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
 				if newWord != "" {
-					results <- newWord
+					fmt.Println(newWord)
 				}
 			}
 		}()
 	}
-
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
-
-	for result := range results {
-		fmt.Println(result)
-	}
+	wg.Wait()
 }
 
 // MutateMasks splits the input strings into chunks and replaces mask characters with the chunks
