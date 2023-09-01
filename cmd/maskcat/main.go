@@ -20,14 +20,15 @@ func main() {
 	doVerbose := flagSet.Bool("v", false, "Show verbose information about masks\nExample: maskcat [MODE] -v")
 	doMultiByte := flagSet.Bool("m", false, "Process multibyte text (warning: slows processes)\nExample: maskcat [MODE] -m")
 	doNumberOfReplacements := flagSet.Int("n", 1, "Max number of replacements to make per item (default: 1)\nExample: maskcat [MODE] -n 1")
+	doFuzzAmount := flagSet.Int("f", 0, "Adds extra fuzz to the replacement functions\nExample: maskcat [MODE] -f 1")
 	flagSet.Usage = func() {
-		fmt.Fprintf(flagSet.Output(), "Options for maskcat (version %s):\n", version)
+		fmt.Fprintf(flagSet.Output(), "Options for maskcat (version %s):\n\n", version)
 		flagSet.PrintDefaults()
 		printUsage()
 	}
 
 	if len(os.Args) < 2 {
-		fmt.Fprintf(flagSet.Output(), "Options for maskcat (version %s):\n", version)
+		fmt.Fprintf(flagSet.Output(), "Options for maskcat (version %s):\n\n", version)
 		flagSet.PrintDefaults()
 		printUsage()
 		os.Exit(0)
@@ -46,11 +47,11 @@ func main() {
 	case "sub":
 		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.SubMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements)
+		cli.SubMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements, *doFuzzAmount)
 	case "mutate":
 		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.MutateMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements)
+		cli.MutateMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements, *doFuzzAmount)
 	case "tokens":
 		flagSet.Parse(os.Args[1:])
 		cli.CheckIfArgExists(2, os.Args)
@@ -77,7 +78,7 @@ func printUsage() {
 	fmt.Println("\t\tExample: stdin | maskcat sub [TOKENS-FILE] [OPTIONS]")
 	fmt.Println("\n  mutate\tMutates text by using chunking and token swapping")
 	fmt.Println("\t\tExample: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]")
-	fmt.Println("\n  tokens\tSplits text into chunks by length (values over 99 allow all)")
+	fmt.Println("\n  tokens\tSplits text into tokens and only print certain lengths (values over 99 allow all)")
 	fmt.Println("\t\tExample: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]")
 	fmt.Println("\n  partial\tPartially replaces characters with mask characters")
 	fmt.Println("\t\tExample: stdin | maskcat partial [MASK-CHARS] [OPTIONS]")

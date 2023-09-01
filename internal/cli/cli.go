@@ -81,11 +81,14 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	infile (string): File path of input file to use
+//	doMultiByte (bool): If multibyte text should be processed
+//	doNumberOfReplacements (int): Max number of times to replace per string
+//	doFuzzAmount(int): Number of additional fuzz characters to add to replacer
 //
 // Returns:
 //
 // None
-func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfReplacements int) {
+func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfReplacements int, doFuzzAmount int) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -123,7 +126,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 		go func() {
 			defer wg.Done()
 			for value := range tokens {
-				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements)
+				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements, doFuzzAmount)
 				if newWord != "" {
 					fmt.Println(newWord)
 				}
@@ -139,11 +142,14 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	chunkSizeStr (string): Size of the chunks as a number
+//	doMultiByte (bool): If multibyte text should be processed
+//	doNumberOfReplacements (int): Max number of times to replace per string
+//	doFuzzAmount(int): Number of additional fuzz characters to add to replacer
 //
 // Returns:
 //
 // None
-func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doNumberOfReplacements int) {
+func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doNumberOfReplacements int, doFuzzAmount int) {
 	var tokens sync.Map
 	args := utils.ConstructReplacements("ulds")
 
@@ -175,7 +181,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 			defer wg.Done()
 
 			tokens.Range(func(key, value interface{}) bool {
-				newWord := utils.ReplaceWord(stringWord, mask, key.(string), args, doNumberOfReplacements)
+				newWord := utils.ReplaceWord(stringWord, mask, key.(string), args, doNumberOfReplacements, doFuzzAmount)
 				if newWord != "" {
 					fmt.Println(newWord)
 				}

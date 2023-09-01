@@ -27,7 +27,6 @@ Maskcat
 - [Removing Characters](#removing-characters)
 
 ### Install
-#### Go
 ```
 # known issue where 2.0.0 is not pulling
 go install -v github.com/jakewnuk/maskcat/cmd/maskcat@latest
@@ -39,6 +38,10 @@ git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/ma
 ```
 ```
 Options for maskcat (version 2.0.0):
+
+  -f int
+        Adds extra fuzz to the replacement functions
+        Example: maskcat [MODE] -f 1
   -m    Process multibyte text (warning: slows processes)
         Example: maskcat [MODE] -m
   -n int
@@ -61,7 +64,7 @@ Modes for maskcat (version 2.0.0):
   mutate        Mutates text by using chunking and token swapping
                 Example: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]
 
-  tokens        Splits text into chunks by length (values over 99 allow all)
+  tokens        Splits text into tokens and only print certain lengths (values over 99 allow all)
                 Example: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]
 
   partial       Partially replaces characters with mask characters

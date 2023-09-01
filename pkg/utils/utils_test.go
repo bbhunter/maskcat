@@ -96,7 +96,7 @@ func TestReplaceWord(t *testing.T) {
 	value := "Hello"
 	replacements := ConstructReplacements("ulds")
 	want := "Hello Jello Mello"
-	got := ReplaceWord(stringword, mask, value, replacements, 1)
+	got := ReplaceWord(stringword, mask, value, replacements, 1, 0)
 	if got != want {
 		t.Errorf("ReplaceWord(%q, %q, %q) = %q; want %q", stringword, mask, value, got, want)
 	}

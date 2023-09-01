@@ -227,16 +227,29 @@ func ReplaceAtIndex(input string, r rune, i int) string {
 //	mask (string): Mask of the word
 //	value (string): String to replace into the word
 //	replacements ([]string): Replacement array used for the value parameter
+//	fuzz (int): Amount of extra replacement characters to add
 //
 // Returns:
 //
 //	newWord (string): Replaced word with value
-func ReplaceWord(word string, mask string, value string, replacements []string, numOfReplacements int) string {
+func ReplaceWord(word string, mask string, value string, replacements []string, numOfReplacements int, fuzz int) string {
 	tokenmask := MakeMask(value, replacements)
 	tokenmask = models.EnsureValidMask(tokenmask)
+
+	if fuzz > 0 {
+		if fuzz > len(mask)/2 {
+			fuzz = (len(mask) / 2)
+		}
+		mask = mask + mask[len(mask)-(fuzz*2):]
+	}
+
 	if strings.Contains(mask, tokenmask) {
 		newword := strings.Replace(mask, tokenmask, value, numOfReplacements)
 		newword = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newword)
+
+		if fuzz > 0 {
+			newword = strings.Replace(newword, "?", "??", fuzz)
+		}
 
 		for i := 0; i < len(word); {
 			r, size := utf8.DecodeRuneInString(word[i:])
