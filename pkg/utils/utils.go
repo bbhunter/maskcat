@@ -166,34 +166,6 @@ func TestEntropy(str string) int {
 	return entropy
 }
 
-// ChunkString splits string into chunks of a given size
-//
-// Args:
-//
-//	str (string): Input string to split
-//	chunkSize (int): Chunk size to split
-//
-// Returns:
-//
-//	chunks ([]string): Map of chunked string
-func ChunkString(str string, chunkSize int) []string {
-	if len(str) == 0 {
-		return nil
-	}
-	if chunkSize >= len(str) {
-		return []string{str}
-	}
-	var chunks []string
-	for i := 0; i < len(str); i += chunkSize {
-		end := i + chunkSize
-		if end > len(str) {
-			end = len(str)
-		}
-		chunks = append(chunks, str[i:end])
-	}
-	return chunks
-}
-
 // ReplaceAtIndex replaces a rune at index in string
 //
 // Args:

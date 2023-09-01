@@ -160,13 +160,14 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
+
+		ngrams := utils.MakeToken(stdIn.Text())
 		chunksInt, err := strconv.Atoi(chunkSizeStr)
 		CheckError(err)
-		chunks := utils.ChunkString(stdIn.Text(), chunksInt)
 
-		for _, ch := range chunks {
-			if len(ch) == chunksInt {
-				tokens.Store(ch, struct{}{})
+		for _, token := range ngrams {
+			if len(token) == chunksInt {
+				tokens.Store(token, struct{}{})
 			}
 		}
 

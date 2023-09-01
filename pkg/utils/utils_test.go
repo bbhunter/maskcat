@@ -80,16 +80,6 @@ func TestTestEntropy(t *testing.T) {
 	}
 }
 
-func TestChunkString(t *testing.T) {
-	s := "Hello, World!"
-	chunkSize := 5
-	want := []string{"Hello", ", Wor", "ld!"}
-	got := ChunkString(s, chunkSize)
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ChunkString(%q, %d) = %q; want %q", s, chunkSize, got, want)
-	}
-}
-
 func TestReplaceWord(t *testing.T) {
 	stringword := "Bello Jello Mello"
 	mask := "?u?l?l?l?l?s?u?l?l?l?l?s?u?l?l?l?l"
