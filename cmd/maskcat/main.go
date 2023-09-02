@@ -42,28 +42,28 @@ func main() {
 		flagSet.Parse(os.Args[2:])
 		cli.GenerateMasks(stdIn, *doMultiByte, *doDeHex, *doVerbose)
 	case "match":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.MatchMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex)
 	case "sub":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.SubMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
 	case "mutate":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.MutateMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
 	case "tokens":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.GenerateTokens(stdIn, os.Args[2], *doDeHex)
 	case "partial":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.GeneratePartialMasks(stdIn, os.Args[2], *doDeHex)
 	case "remove":
-		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
 		cli.GeneratePartialRemoveMasks(stdIn, os.Args[2], *doDeHex)
 	}
 }
