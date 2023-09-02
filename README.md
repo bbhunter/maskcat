@@ -1,29 +1,23 @@
-<h1 align="center">
-Maskcat
- </h1>
+`Maskcat` is a multi-tool for working with text streams for password cracking.
 
-Maskcat is a multi-tool for working with text streams for password cracking.
-Maskcat (`cat` mask) focuses on the usage of masks to extract and transform
-text and features several functions:
+Maskcat (`cat` mask) focuses on the usage of masks to extract and transform text and features several functions:
 
-    - Making `hashcat` masks from `stdin`
-    - Matching words from `stdin` to masks
-    - Substituting tokens into string using masks
-    - Mutating `stdin` with masks for new candidates
-    - Generating tokens from `stdin` by extracting input
-    - Creating partial masks from `stdin` by selecting character sets
-    - Removing characters from `stdin` by selecting character sets
+   - Making `hashcat` masks from `stdin`
+   - Matching words from `stdin` to masks
+   - Substituting tokens into string using masks
+   - Mutating `stdin` with masks for new candidates
+   - Generating tokens from `stdin` by extracting input
+   - Creating partial masks from `stdin` by selecting character sets
+   - Removing characters from `stdin` by selecting character sets
 
-Maskcat also supports several options to assist in being a flexible and
-powerful tool:
+Maskcat also supports several options to assist in being a flexible and powerful tool:
 
 - Multibyte text support
 - Auto-dehexing text support
 - Configurable number of replacements
 - Additional fuzz configuration for replacements to create unique output
 
-Maskcat fits into a small tool ecosystem for password cracking and is designed
-for lightweight and easy usage with its companion tools:
+Maskcat fits into a small tool ecosystem for password cracking and is designed for lightweight and easy usage with its companion tools:
 
 - [maskcat](https://github.com/JakeWnuk/maskcat)
 - [rulecat](https://github.com/JakeWnuk/rulecat)
