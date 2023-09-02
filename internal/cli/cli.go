@@ -150,7 +150,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex boo
 		go func() {
 			defer wg.Done()
 			for value := range tokens {
-				newWord := utils.ReplaceWord(stringWord, mask, value, args, doNumberOfReplacements, doFuzzAmount)
+				newWord := utils.ReplaceWordByMask(stringWord, mask, value, args, doNumberOfReplacements, doFuzzAmount)
 				if newWord != "" {
 					fmt.Println(newWord)
 				}
@@ -217,7 +217,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 			defer wg.Done()
 
 			tokens.Range(func(key, value interface{}) bool {
-				newWord := utils.ReplaceWord(stringWord, mask, key.(string), args, doNumberOfReplacements, doFuzzAmount)
+				newWord := utils.ReplaceWordByMask(stringWord, mask, key.(string), args, doNumberOfReplacements, doFuzzAmount)
 				if newWord != "" {
 					fmt.Println(newWord)
 				}

@@ -81,15 +81,15 @@ func TestTestEntropy(t *testing.T) {
 	}
 }
 
-func TestReplaceWord(t *testing.T) {
+func TestReplaceWordByMask(t *testing.T) {
 	stringword := "Bello Jello Mello"
 	mask := "?u?l?l?l?l?s?u?l?l?l?l?s?u?l?l?l?l"
 	value := "Hello"
 	replacements := ConstructReplacements("ulds")
 	want := "Hello Jello Mello"
-	got := ReplaceWord(stringword, mask, value, replacements, 1, 0)
+	got := ReplaceWordByMask(stringword, mask, value, replacements, 1, 0)
 	if got != want {
-		t.Errorf("ReplaceWord(%q, %q, %q) = %q; want %q", stringword, mask, value, got, want)
+		t.Errorf("ReplaceWordByMask(%q, %q, %q) = %q; want %q", stringword, mask, value, got, want)
 	}
 }
 

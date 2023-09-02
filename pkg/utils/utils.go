@@ -192,7 +192,7 @@ func ReplaceAtIndex(input string, r rune, i int) string {
 	return string(out)
 }
 
-// ReplaceWord replaces a mask within an input string with a provided value
+// ReplaceWordByMask replaces a mask within an input string with a provided value
 //
 // Args:
 //
@@ -205,7 +205,7 @@ func ReplaceAtIndex(input string, r rune, i int) string {
 // Returns:
 //
 //	newWord (string): Replaced word with value
-func ReplaceWord(word string, mask string, value string, replacements []string, numOfReplacements int, fuzz int) string {
+func ReplaceWordByMask(word string, mask string, value string, replacements []string, numOfReplacements int, fuzz int) string {
 	tokenmask := MakeMask(value, replacements)
 	tokenmask = models.EnsureValidMask(tokenmask)
 
