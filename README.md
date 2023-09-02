@@ -39,6 +39,8 @@ git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/ma
 ```
 Options for maskcat (version 2.0.0):
 
+  -d    Process $HEX[...] text (warning: slows processes)
+        Example: maskcat [MODE] -d
   -f int
         Adds extra fuzz to the replacement functions
         Example: maskcat [MODE] -f 1

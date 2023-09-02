@@ -19,6 +19,7 @@ func main() {
 	flagSet := flag.NewFlagSet("maskcat", flag.ExitOnError)
 	doVerbose := flagSet.Bool("v", false, "Show verbose information about masks\nExample: maskcat [MODE] -v")
 	doMultiByte := flagSet.Bool("m", false, "Process multibyte text (warning: slows processes)\nExample: maskcat [MODE] -m")
+	doDeHex := flagSet.Bool("d", false, "Process $HEX[...] text (warning: slows processes)\nExample: maskcat [MODE] -d")
 	doNumberOfReplacements := flagSet.Int("n", 1, "Max number of replacements to make per item (default: 1)\nExample: maskcat [MODE] -n 1")
 	doFuzzAmount := flagSet.Int("f", 0, "Adds extra fuzz to the replacement functions\nExample: maskcat [MODE] -f 1")
 	flagSet.Usage = func() {
@@ -39,31 +40,31 @@ func main() {
 	switch os.Args[1] {
 	case "mask":
 		flagSet.Parse(os.Args[2:])
-		cli.GenerateMasks(stdIn, *doMultiByte, *doVerbose)
+		cli.GenerateMasks(stdIn, *doMultiByte, *doDeHex, *doVerbose)
 	case "match":
-		flagSet.Parse(os.Args[2:])
+		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.MatchMasks(stdIn, os.Args[2], *doMultiByte)
+		cli.MatchMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex)
 	case "sub":
 		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.SubMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements, *doFuzzAmount)
+		cli.SubMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
 	case "mutate":
 		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.MutateMasks(stdIn, os.Args[2], *doMultiByte, *doNumberOfReplacements, *doFuzzAmount)
+		cli.MutateMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
 	case "tokens":
-		flagSet.Parse(os.Args[1:])
+		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.GenerateTokens(stdIn, os.Args[2])
+		cli.GenerateTokens(stdIn, os.Args[2], *doDeHex)
 	case "partial":
-		flagSet.Parse(os.Args[1:])
+		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.GeneratePartialMasks(stdIn, os.Args[2])
+		cli.GeneratePartialMasks(stdIn, os.Args[2], *doDeHex)
 	case "remove":
-		flagSet.Parse(os.Args[1:])
+		flagSet.Parse(os.Args[3:])
 		cli.CheckIfArgExists(2, os.Args)
-		cli.GeneratePartialRemoveMasks(stdIn, os.Args[2])
+		cli.GeneratePartialRemoveMasks(stdIn, os.Args[2], *doDeHex)
 	}
 }
 

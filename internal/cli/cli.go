@@ -20,11 +20,13 @@ import (
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	infile (string): File path of input file to use
+//	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
 //
 // Returns:
 //
 //	None
-func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
+func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -38,6 +40,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 	filescanner := bufio.NewScanner(buf)
 	var masks []string
 	args := utils.ConstructReplacements("ulds")
+	stdText := ""
 
 	for filescanner.Scan() {
 		if models.IsHashMask(filescanner.Text()) == false {
@@ -50,8 +53,19 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
-		mask := utils.MakeMask(stdIn.Text(), args)
 
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				fmt.Println("error")
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		mask := utils.MakeMask(stdText, args)
 		if doMultiByte {
 			mask = models.EnsureValidMask(mask)
 		}
@@ -62,7 +76,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 			for _, value := range masks {
 
 				if mask == value {
-					fmt.Println(stdIn.Text())
+					fmt.Println(stdText)
 					break
 				}
 
@@ -82,13 +96,14 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool) {
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	infile (string): File path of input file to use
 //	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
 //	doNumberOfReplacements (int): Max number of times to replace per string
 //	doFuzzAmount(int): Number of additional fuzz characters to add to replacer
 //
 // Returns:
 //
 // None
-func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfReplacements int, doFuzzAmount int) {
+func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool, doNumberOfReplacements int, doFuzzAmount int) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -116,8 +131,17 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 	var wg sync.WaitGroup
 
 	for stdIn.Scan() {
-		stringWord := stdIn.Text()
-		mask := utils.MakeMask(stdIn.Text(), args)
+		stringWord := ""
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stringWord = ""
+			}
+			stringWord = plaintext
+		} else {
+			stringWord = stdIn.Text()
+		}
+		mask := utils.MakeMask(stringWord, args)
 		if doMultiByte {
 			mask = models.EnsureValidMask(mask)
 		}
@@ -143,16 +167,17 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doNumberOfR
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	chunkSizeStr (string): Size of the chunks as a number
 //	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
 //	doNumberOfReplacements (int): Max number of times to replace per string
 //	doFuzzAmount(int): Number of additional fuzz characters to add to replacer
 //
 // Returns:
 //
 // None
-func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doNumberOfReplacements int, doFuzzAmount int) {
+func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, doDeHex bool, doNumberOfReplacements int, doFuzzAmount int) {
 	var tokens sync.Map
 	args := utils.ConstructReplacements("ulds")
-
+	stdText := ""
 	if models.IsStringInt(chunkSizeStr) == false {
 		CheckError(errors.New("Invalid Chunk Size"))
 	}
@@ -161,7 +186,17 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 
 	for stdIn.Scan() {
 
-		ngrams := utils.MakeToken(stdIn.Text())
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		ngrams := utils.MakeToken(stdText)
 		chunksInt, err := strconv.Atoi(chunkSizeStr)
 		CheckError(err)
 
@@ -171,8 +206,8 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 			}
 		}
 
-		stringWord := stdIn.Text()
-		mask := utils.MakeMask(stdIn.Text(), args)
+		stringWord := stdText
+		mask := utils.MakeMask(stdText, args)
 		if doMultiByte {
 			mask = models.EnsureValidMask(mask)
 		}
@@ -199,17 +234,30 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	lengthStr (string): Length of the tokens as a number
+//	doDeHex (bool): If $HEX[...] text should be processed
 //
 // Returns:
 //
 // None
-func GenerateTokens(stdIn *bufio.Scanner, lengthStr string) {
+func GenerateTokens(stdIn *bufio.Scanner, lengthStr string, doDeHex bool) {
+	stdText := ""
 	if models.IsStringInt(lengthStr) == false {
 		CheckError(errors.New("Invalid String Size"))
 	}
 
 	for stdIn.Scan() {
-		tokens := utils.MakeToken(stdIn.Text())
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		tokens := utils.MakeToken(stdText)
 		for _, token := range tokens {
 			if models.IsStringAlpha(token) == false {
 				continue
@@ -234,19 +282,32 @@ func GenerateTokens(stdIn *bufio.Scanner, lengthStr string) {
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	maskChars (string): String of which character sets to replace (udlsb)
+//	doDeHex (bool): If $HEX[...] text should be processed
 //
 // Returns:
 //
 // None
-func GeneratePartialMasks(stdIn *bufio.Scanner, maskChars string) {
+func GeneratePartialMasks(stdIn *bufio.Scanner, maskChars string, doDeHex bool) {
 	args := utils.ConstructReplacements(maskChars)
+	stdText := ""
 
 	if models.IsHashMask(maskChars) == false {
 		CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
 	}
 
 	for stdIn.Scan() {
-		partial := utils.MakeMask(stdIn.Text(), args)
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		partial := utils.MakeMask(stdText, args)
 		if strings.Contains(maskChars, "b") {
 			partial = models.ConvertMultiByteString(partial)
 		}
@@ -261,19 +322,32 @@ func GeneratePartialMasks(stdIn *bufio.Scanner, maskChars string) {
 //	stdIn (*bufio.Scanner): Buffer of standard input
 //	infile (string): File path of input file to use
 //	maskChars (string): String of which character sets to replace (udlsb)
+//	doDeHex (bool): If $HEX[...] text should be processed
 //
 // Returns:
 //
 // None
-func GeneratePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string) {
+func GeneratePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string, doDeHex bool) {
 	args := utils.ConstructReplacements(maskChars)
+	stdText := ""
 
 	if models.IsHashMask(maskChars) == false {
 		CheckError(errors.New("Can only contain 'u','d','l', 'b', and 's'"))
 	}
 
 	for stdIn.Scan() {
-		partial := utils.MakeMask(stdIn.Text(), args)
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		partial := utils.MakeMask(stdText, args)
 		if strings.Contains(maskChars, "b") {
 			partial = models.ConvertMultiByteString(partial)
 		}
@@ -287,19 +361,34 @@ func GeneratePartialRemoveMasks(stdIn *bufio.Scanner, maskChars string) {
 // Args:
 //
 //	stdIn (*bufio.Scanner): Buffer of standard input
+//	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
+//	verbose (bool): If verbose stdText should be printed about masks
 //
 // Returns:
 //
 // None
-func GenerateMasks(stdIn *bufio.Scanner, doMultiByte bool, verbose bool) {
+func GenerateMasks(stdIn *bufio.Scanner, doMultiByte bool, doDeHex bool, verbose bool) {
 	args := utils.ConstructReplacements("ulds")
+	stdText := ""
 	for stdIn.Scan() {
-		mask := utils.MakeMask(stdIn.Text(), args)
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		mask := utils.MakeMask(stdText, args)
 		if doMultiByte {
 			mask = models.EnsureValidMask(mask)
 		}
 		if verbose {
-			fmt.Printf("%s:%d:%d:%d\n", mask, len(stdIn.Text()), utils.TestComplexity(mask), utils.TestEntropy(mask))
+			fmt.Printf("%s:%d:%d:%d\n", mask, len(stdText), utils.TestComplexity(mask), utils.TestEntropy(mask))
 		} else {
 			fmt.Printf("%s\n", mask)
 		}

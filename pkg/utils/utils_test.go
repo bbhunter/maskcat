@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -98,5 +99,47 @@ func TestRemoveMaskChars(t *testing.T) {
 	got := RemoveMaskCharacters(str)
 	if got != want {
 		t.Errorf("RemoveMaskChars(%q) = %q; want %q", str, got, want)
+	}
+}
+
+func TestDehexPlaintext(t *testing.T) {
+	tests := []struct {
+		input string
+		plain string
+		err   error
+	}{
+		{"$HEX[48656c6c6f20576f726c64]", "Hello World", nil},
+		{"$HEX[48656c6c6f]", "Hello", nil},
+		{"$HEX[48656c6c6f20576f726c64b", "Hello World", fmt.Errorf("encoding/hex: odd length hex string")},
+		{"$HEX[]", "", nil},
+	}
+
+	for _, test := range tests {
+		plain, err := DehexPlaintext(test.input)
+		if plain != test.plain || (err != nil && test.err != nil && err.Error() != test.err.Error()) {
+			t.Errorf("DehexPlaintext(%v) = (%v, %v), want (%v, %v)", test.input, plain, err, test.plain, test.err)
+		}
+	}
+}
+
+func TestTestHexInput(t *testing.T) {
+	tests := []struct {
+		input string
+		valid bool
+	}{
+		{"$HEX[123abc]", true},
+		{"$HEX[123ABC]", true},
+		{"$HEX[123abC]", true},
+		{"$HEX[123abC", false},
+		{"HEX[123abC]", false},
+		{"$HEX[]", true},
+		{"$HEX", false},
+	}
+
+	for _, test := range tests {
+		valid := TestHexInput(test.input)
+		if valid != test.valid {
+			t.Errorf("TestHexInput(%v) = %v, want %v", test.input, valid, test.valid)
+		}
 	}
 }

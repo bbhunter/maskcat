@@ -7,6 +7,7 @@
 package utils
 
 import (
+	"encoding/hex"
 	"os"
 	"regexp"
 	"strings"
@@ -245,4 +246,38 @@ func ReplaceWord(word string, mask string, value string, replacements []string, 
 		}
 	}
 	return ""
+}
+
+// DehexPlaintext decodes plaintext from $HEX[...] format
+//
+// Args:
+//
+//	s (string): The string to be dehexed
+//
+// Returns:
+//
+//	decoded (string): The decoded hex string
+//	err (error): Error data
+func DehexPlaintext(s string) (string, error) {
+	s = strings.TrimPrefix(s, "$HEX[")
+	s = strings.TrimSuffix(s, "]")
+	decoded, err := hex.DecodeString(s)
+	return string(decoded), err
+}
+
+// TestHexInput is used to identify plaintext in the $HEX[...] format
+//
+// Args:
+//
+//	s (str): The string to be evaluated
+//
+// Returns:
+//
+//	(bool): Returns true if it matches and false if it did not
+func TestHexInput(s string) bool {
+	var validateInput = regexp.MustCompile(`^\$HEX\[[a-zA-Z0-9]*\]$`).MatchString
+	if validateInput(s) == false {
+		return false
+	}
+	return true
 }
