@@ -141,6 +141,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex boo
 		} else {
 			stringWord = stdIn.Text()
 		}
+
 		mask := utils.MakeMask(stringWord, args)
 		if doMultiByte {
 			mask = models.EnsureValidMask(mask)
@@ -151,6 +152,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex boo
 			defer wg.Done()
 			for value := range tokens {
 				newWord := utils.ReplaceWordByMask(stringWord, mask, value, args, doNumberOfReplacements, doFuzzAmount)
+
 				if newWord != "" {
 					fmt.Println(newWord)
 				}

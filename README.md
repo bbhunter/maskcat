@@ -23,24 +23,24 @@ Maskcat fits into a small tool ecosystem for password cracking and is designed f
 - [rulecat](https://github.com/JakeWnuk/rulecat)
 - [mode](https://github.com/JakeWnuk/mode)
 
-## Getting Started
+### Getting Started
 
 Usage information and other documentation can be found below:
 
 - Usage documentation:
     - [Creating and matching masks](https://github.com/JakeWnuk/maskcat/docs/create_and_match.md)
-    - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/docs/swap_and_mutate.md))
-    - [Generating Tokens, Partial Masks, and Removing Character Sets](https://github.com/JakeWnuk/maskcat/docs/tokens_partial_and_remove.md))
+    - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/docs/swap_and_mutate.md)
+    - [Generating Tokens, Partial Masks, and Removing Character Sets](https://github.com/JakeWnuk/maskcat/docs/tokens_partial_and_remove.md)
 
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
 
-#### Install From Source
+### Install From Source
 ```
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
 ```
 
-## Current version 2.0.0:
+### Current version 2.0.0:
 
 ```
 Options for maskcat (version 2.0.0):
