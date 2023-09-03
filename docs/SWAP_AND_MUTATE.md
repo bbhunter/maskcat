@@ -35,7 +35,7 @@ Tloveng
 ```
 
 ### Swapping Text
-Maskcat can be used to subsititute text from `stdin` with items from a file
+Maskcat can be used to substitute text from `stdin` with items from a file
 based on masks. This will transform the strings into masks and find masks where
 the substring is allowed. If allowed a token swap is made and the new string is
 created. 
@@ -56,19 +56,25 @@ The `sub` mode is affected by the following option flags:
 When the `-n` flag is provided the default max number of replacements (1) can
 be increased.
 ```
-$ cat sub2.txt
+$ cat sub.txt
 swap
 
-$ echo 'string needs replacements' | maskcat sub sub2.txt -n 2
+$ echo 'string needs replacements' | maskcat sub sub.txt -n 2
 swapng swaps replacements
 ```
 
 When the `-f` flag is provided the default fuzz amount (0) can be increased.
 The fuzzer works by extending the mask by its last value inside it. This allows
-for tokens that normally would not match an oppertunity to create a new
+for tokens that normally would not match an opportunity to create a new
 candidate.
 ```
+$ cat sub.txt
+stringz
+bello
 
+$ echo 'hello world' | maskcat sub sub.txt -f 2
+hello stringz
+bello world
 ```
 
 ### Mutating Text

@@ -220,12 +220,9 @@ func ReplaceWordByMask(word string, mask string, value string, replacements []st
 		newword := strings.Replace(mask, tokenmask, value, numOfReplacements)
 		newword = strings.NewReplacer("?u", "?", "?l", "?", "?b", "?", "?d", "?", "?s", "?").Replace(newword)
 
-		if fuzz > 0 {
-			newword = strings.Replace(newword, "?", "??", fuzz)
-		}
-
 		for i := 0; i < len(word); {
 			r, size := utf8.DecodeRuneInString(word[i:])
+
 			if i < len(newword) && newword[i] == '?' {
 				newword = ReplaceAtIndex(newword, r, i)
 			}
