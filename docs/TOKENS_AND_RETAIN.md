@@ -8,6 +8,12 @@ big old test
 luvTesting
 it123always
 works
+
+$ cat retain.txt
+this
+test
+works
+123
 ```
 Make tokens of length X
 ```
@@ -16,6 +22,16 @@ isa
 big
 old
 luv
+```
+Make retain masks from file input
+```
+$ cat test.txt | maskcat retain retain.txt
+works
+this
+?l?l?s?l
+?l?l?l?s?l?l?l?stest
+?l?l123?l?l?l?l?l?l
+?l?l?l?u?l?l?l?l?l?l
 ```
 
 ### Making Tokens
@@ -43,4 +59,18 @@ The following regex are used to do this:
  - `[A-Z][a-z]*|\d+|[^\dA-Z]+`
  - `[A-Z][a-z]*|\d+|\W+|\w+`
  - `[^a-zA-Z]+`
+
+### Making Retain Masks
+Maskcat can be used to create retain masks from `stdin` by creating masks
+except for tokens given in a file. This will transform input into masks except
+for any input given from a file.
+
+This can be used to create masks that preserve common material.
+```
+Example: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]
+```
+
+The `retain` mode is affected by the following option flags:
+- `-m` to process multibyte text
+- `-d` to process `$HEX[...]` text
 

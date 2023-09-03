@@ -4,11 +4,12 @@ Maskcat (`cat` mask) focuses on the usage of masks to extract and transform text
 
    - Making `hashcat` masks from `stdin`
    - Matching words from `stdin` to masks
-   - Substituting tokens into string using masks
+   - Substituting tokens into `stdin` using masks
    - Mutating `stdin` with masks for new candidates
    - Generating tokens from `stdin` by extracting input
    - Creating partial masks from `stdin` by selecting character sets
    - Removing characters from `stdin` by selecting character sets
+   - Creating retain masks from `stdin` by selecting tokens to retain
 
 Maskcat also supports several options to assist in being a flexible and powerful tool:
 
@@ -81,4 +82,7 @@ Modes for maskcat (version 2.0.0):
 
   remove        Removes characters that match given mask characters
                 Example: stdin | maskcat remove [MASK-CHARS] [OPTIONS]
+
+  retain        Creates retain masks by keeping text from a file
+                Example: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]
 ```

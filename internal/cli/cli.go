@@ -401,6 +401,105 @@ func GenerateMasks(stdIn *bufio.Scanner, doMultiByte bool, doDeHex bool, verbose
 	}
 }
 
+// GenerateTokenRetainMasks creates masks while retaining tokens from a file
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	infile (string): File path of input file to use
+//	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
+//
+// Returns:
+//
+// None
+func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool) {
+	buf, err := os.Open(infile)
+	CheckError(err)
+
+	defer func() {
+		if err = buf.Close(); err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
+	}()
+
+	filescanner := bufio.NewScanner(buf)
+	tokens := make(map[string]struct{})
+	args := utils.ConstructReplacements("ulds")
+
+	for filescanner.Scan() {
+		if filescanner.Text() != "" {
+			tokens[filescanner.Text()] = struct{}{}
+		}
+
+		if err := filescanner.Err(); err != nil {
+			CheckError(err)
+		}
+	}
+
+	var wg sync.WaitGroup
+
+	for stdIn.Scan() {
+		stringWord := ""
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stringWord = ""
+			}
+			stringWord = plaintext
+		} else {
+			stringWord = stdIn.Text()
+		}
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			result := []string{stringWord}
+
+			// Iterate on tokens
+			for value := range tokens {
+				var temp []string
+
+				// Iterate on item text
+				for _, s := range result {
+					split := strings.Split(s, value)
+
+					// Iterate on exploded string
+					for i, ss := range split {
+						if ss != "" {
+							temp = append(temp, ss)
+						}
+
+						// Check if its the last split string
+						if i != len(split)-1 {
+							temp = append(temp, value)
+						}
+					}
+				}
+				result = temp
+			}
+
+			for i, s := range result {
+				if _, ok := tokens[s]; !ok {
+					mask := utils.MakeMask(s, args)
+					if doMultiByte {
+						mask = models.EnsureValidMask(mask)
+					}
+
+					s = mask
+					result[i] = s
+				}
+			}
+
+			fmt.Println(strings.Join(result, ""))
+
+		}()
+	}
+	wg.Wait()
+}
+
 // CheckIfArgExists checks an argument at a postion to see if it exists
 //
 // Args:

@@ -65,6 +65,10 @@ func main() {
 		cli.CheckIfArgExists(2, os.Args)
 		flagSet.Parse(os.Args[3:])
 		cli.GeneratePartialRemoveMasks(stdIn, os.Args[2], *doDeHex)
+	case "retain":
+		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
+		cli.GenerateTokenRetainMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex)
 	}
 }
 
@@ -85,4 +89,6 @@ func printUsage() {
 	fmt.Println("\t\tExample: stdin | maskcat partial [MASK-CHARS] [OPTIONS]")
 	fmt.Println("\n  remove\tRemoves characters that match given mask characters")
 	fmt.Println("\t\tExample: stdin | maskcat remove [MASK-CHARS] [OPTIONS]")
+	fmt.Println("\n  retain\tCreates retain masks by keeping text from a file")
+	fmt.Println("\t\tExample: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]")
 }
