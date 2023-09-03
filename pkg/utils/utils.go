@@ -226,10 +226,8 @@ func ReplaceWordByMask(word string, mask string, value string, replacements []st
 
 		for i := 0; i < len(word); {
 			r, size := utf8.DecodeRuneInString(word[i:])
-			if i < len(newword) {
-				if newword[i] == '?' {
-					newword = ReplaceAtIndex(newword, r, i)
-				}
+			if i < len(newword) && newword[i] == '?' {
+				newword = ReplaceAtIndex(newword, r, i)
 			}
 			i += size
 		}
