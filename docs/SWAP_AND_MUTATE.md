@@ -83,6 +83,8 @@ and inserting them into future items. This will transform strings by shuffling
 tokens within them. If the token length matches the input length then it is
 kept otherwise discarded and not used for swapping.
 
+This is often used to rapidly create new candidates based on material.
+
 ```
 Example: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]
 ```
@@ -93,4 +95,5 @@ The `mutate` mode is affected by the following option flags:
 - `-n` to control the max number of replacements per string
 - `-f` to control the amount of extra fuzz to add to the replacements
 
-
+The `mutate` mode will use the tokenizer logic from the `tokens` mode to
+generate substrings to use in the mutation logic.

@@ -93,7 +93,7 @@ func MakeMask(str string, replacements []string) string {
 //
 // Returns:
 //
-//	array ([]string): Tokens from input string
+//	result ([]string): Tokens from input string
 func MakeToken(str string) []string {
 	re1 := regexp.MustCompile(`[A-Z][a-z]*|\d+|[^\dA-Z]+`)
 	preArray := re1.FindAllString(str, -1)
@@ -104,7 +104,15 @@ func MakeToken(str string) []string {
 	}
 	re3 := regexp.MustCompile(`[^a-zA-Z]+`)
 	array = append(array, re3.ReplaceAllString(str, ""))
-	return array
+
+	result := []string{}
+	for _, word := range array {
+		if word != " " {
+			result = append(result, word)
+		}
+	}
+
+	return result
 }
 
 // RemoveMaskCharacters will replace mask characters in a string with nothing

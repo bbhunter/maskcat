@@ -28,9 +28,9 @@ Maskcat fits into a small tool ecosystem for password cracking and is designed f
 Usage information and other documentation can be found below:
 
 - Usage documentation:
-    - [Creating and matching masks](https://github.com/JakeWnuk/maskcat/docs/create_and_match.md)
-    - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/docs/swap_and_mutate.md)
-    - [Generating Tokens, Partial Masks, and Removing Character Sets](https://github.com/JakeWnuk/maskcat/docs/tokens_partial_and_remove.md)
+    - [Creating and matching masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/CREATE_AND_MATCH.md)
+    - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/blob/main/docs/SWAP_AND_MUTATE.md)
+    - [Generating Tokens, Partial Masks, and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_PARTIAL_AND_REMOVE.md)
 
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/)
