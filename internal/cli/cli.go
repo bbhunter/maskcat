@@ -484,8 +484,25 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 
 			kept := 0
 			override := false
+			forward := false
+
 			for i, s := range result {
 				if _, ok := tokens[s]; !ok || override {
+
+					look := i + 1
+					if look > len(result)-1 {
+						look = len(result) - 1
+					}
+
+					// Limiting fowards to one for now
+					if _, forwardOk := tokens[s+result[look]]; forwardOk && forward == false {
+						forward = true
+						continue
+					} else if forward {
+						forward = false
+						kept++
+						continue
+					}
 
 					mask := utils.MakeMask(s, args)
 					if doMultiByte {
@@ -495,6 +512,10 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 					s = mask
 					result[i] = s
 				} else {
+					if forward {
+						forward = false
+					}
+
 					kept++
 					if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
 						override = true
