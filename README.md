@@ -42,10 +42,10 @@ Usage information and other documentation can be found below:
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
 ```
 
-### Current Version 2.0.0:
+### Current Version 2.1.0:
 
 ```
-Options for maskcat (version 2.0.0):
+Options for maskcat (version 2.1.0):
 
   -d    Process $HEX[...] text (warning: slows processes)
         Example: maskcat [MODE] -d
