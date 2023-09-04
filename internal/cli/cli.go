@@ -409,11 +409,12 @@ func GenerateMasks(stdIn *bufio.Scanner, doMultiByte bool, doDeHex bool, verbose
 //	infile (string): File path of input file to use
 //	doMultiByte (bool): If multibyte text should be processed
 //	doDeHex (bool): If $HEX[...] text should be processed
+//	doNumberOfReplacements (int): Max number of times to replace per string
 //
 // Returns:
 //
 // None
-func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool) {
+func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool, doNumberOfReplacements int) {
 	buf, err := os.Open(infile)
 	CheckError(err)
 
@@ -481,8 +482,11 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 				result = temp
 			}
 
+			kept := 0
+			override := false
 			for i, s := range result {
-				if _, ok := tokens[s]; !ok {
+				if _, ok := tokens[s]; !ok || override {
+
 					mask := utils.MakeMask(s, args)
 					if doMultiByte {
 						mask = models.EnsureValidMask(mask)
@@ -490,6 +494,11 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 
 					s = mask
 					result[i] = s
+				} else {
+					kept++
+					if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
+						override = true
+					}
 				}
 			}
 

@@ -73,4 +73,24 @@ Example: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]
 The `retain` mode is affected by the following option flags:
 - `-m` to process multibyte text
 - `-d` to process `$HEX[...]` text
+- `-n` to control the max number of replacements per string
 
+When the `-n` or max number of replacements value is provided the default (1)
+number of max replacements can be changed.
+```
+$ cat retain.txt
+this
+test
+works
+123
+old
+always
+
+$ cat test.txt | maskcat retain retain.txt -n 2
+this
+?l?l123always
+?l?l?l?sold?stest
+works
+?l?l?l?u?l?l?l?l?l?l
+?l?l?s?l
+```

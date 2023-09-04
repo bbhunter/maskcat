@@ -68,7 +68,7 @@ func main() {
 	case "retain":
 		cli.CheckIfArgExists(2, os.Args)
 		flagSet.Parse(os.Args[3:])
-		cli.GenerateTokenRetainMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex)
+		cli.GenerateTokenRetainMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements)
 	}
 }
 
