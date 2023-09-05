@@ -60,7 +60,7 @@ Options for maskcat (version 2.1.0):
   -v    Show verbose information about masks
         Example: maskcat [MODE] -v
 
-Modes for maskcat (version 2.0.0):
+Modes for maskcat (version 2.1.0):
 
   mask          Creates masks from text
                 Example: stdin | maskcat mask [OPTIONS]
