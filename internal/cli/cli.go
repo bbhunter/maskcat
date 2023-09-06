@@ -71,7 +71,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex b
 		}
 
 		wg.Add(1)
-		go func() {
+		go func(mask string, stdText string) {
 			defer wg.Done()
 			for _, value := range masks {
 
@@ -84,7 +84,7 @@ func MatchMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex b
 					CheckError(err)
 				}
 			}
-		}()
+		}(mask, stdText)
 	}
 	wg.Wait()
 }
@@ -148,7 +148,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex boo
 		}
 
 		wg.Add(1)
-		go func() {
+		go func(stringWord string, mask string) {
 			defer wg.Done()
 			for value := range tokens {
 				newWord := utils.ReplaceWordByMask(stringWord, mask, value, args, doNumberOfReplacements, doFuzzAmount)
@@ -157,7 +157,7 @@ func SubMasks(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex boo
 					fmt.Println(newWord)
 				}
 			}
-		}()
+		}(stringWord, mask)
 	}
 	wg.Wait()
 }
@@ -215,7 +215,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 		}
 
 		wg.Add(1)
-		go func() {
+		go func(stringWord string, mask string) {
 			defer wg.Done()
 
 			tokens.Range(func(key, value interface{}) bool {
@@ -225,7 +225,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 				}
 				return true
 			})
-		}()
+		}(stringWord, mask)
 	}
 	wg.Wait()
 }
@@ -454,7 +454,7 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 		}
 
 		wg.Add(1)
-		go func() {
+		go func(stringWord string) {
 			defer wg.Done()
 
 			result := []string{stringWord}
@@ -525,7 +525,7 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 
 			fmt.Println(strings.Join(result, ""))
 
-		}()
+		}(stringWord)
 	}
 	wg.Wait()
 }
