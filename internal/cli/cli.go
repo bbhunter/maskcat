@@ -530,6 +530,169 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 	wg.Wait()
 }
 
+// GenerateSpliceMutation performs mutation mode on retain masks
+// TODO Document and add to CLI
+// TODO Consider making a retain mask function to remove dupe code
+//
+// Args:
+//
+//		stdIn (*bufio.Scanner): Buffer of standard input
+//	 infile (string): File path of input file to use
+//		doMultiByte (bool): If multibyte text should be processed
+//		doDeHex (bool): If $HEX[...] text should be processed
+//		doNumberOfReplacements (int): Max number of times to replace per string
+//		doFuzzAmount(int): Number of additional fuzz characters to add to replacer
+//
+// Returns:
+//
+// None
+func GenerateSpliceMutation(stdIn *bufio.Scanner, infile string, doMultiByte bool, doDeHex bool, doNumberOfReplacements int, doFuzzAmount int) {
+
+	// Read the retain infile
+	buf, err := os.Open(infile)
+	CheckError(err)
+
+	defer func() {
+		if err = buf.Close(); err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
+	}()
+
+	filescanner := bufio.NewScanner(buf)
+	retainTokens := make(map[string]struct{})
+	args := utils.ConstructReplacements("ulds")
+
+	for filescanner.Scan() {
+		if filescanner.Text() != "" {
+			retainTokens[filescanner.Text()] = struct{}{}
+		}
+
+		if err := filescanner.Err(); err != nil {
+			CheckError(err)
+		}
+	}
+
+	// Start a mutation loop
+	var tokens sync.Map
+	stdText := ""
+
+	var wg sync.WaitGroup
+
+	for stdIn.Scan() {
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		ngrams := utils.MakeToken(stdText)
+
+		for _, token := range ngrams {
+			if len(token) >= 4 {
+				tokens.Store(token, struct{}{})
+			}
+		}
+
+		stringWord := stdText
+
+		wg.Add(1)
+		go func(stringWord string) {
+			defer wg.Done()
+
+			// Create the retain mask
+			result := []string{stringWord}
+
+			// Iterate on tokens
+			for value := range retainTokens {
+				var temp []string
+
+				// Iterate on item text
+				for _, s := range result {
+					split := strings.Split(s, value)
+
+					// Iterate on exploded string
+					for i, ss := range split {
+						if ss != "" {
+							temp = append(temp, ss)
+						}
+
+						// Check if its the last split string
+						if i != len(split)-1 {
+							temp = append(temp, value)
+						}
+					}
+				}
+				result = temp
+			}
+
+			kept := 0
+			override := false
+			forward := false
+
+			for i, s := range result {
+				if _, ok := retainTokens[s]; !ok || override {
+
+					look := i + 1
+					if look > len(result)-1 {
+						look = len(result) - 1
+					}
+
+					// Limiting fowards to one for now
+					if _, forwardOk := retainTokens[s+result[look]]; forwardOk && forward == false {
+						forward = true
+						continue
+					} else if forward {
+						forward = false
+						kept++
+						continue
+					}
+
+					mask := utils.MakeMask(s, args)
+					if doMultiByte {
+						mask = models.EnsureValidMask(mask)
+					}
+
+					s = mask
+					result[i] = s
+				} else {
+					if forward {
+						forward = false
+					}
+
+					kept++
+					if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
+						override = true
+					}
+				}
+			}
+
+			mask := strings.Join(result, "")
+
+			// Use the retain mask in mutation
+			tokens.Range(func(key, value interface{}) bool {
+				newWord := utils.ReplaceWordByMask(stringWord, mask, key.(string), args, doNumberOfReplacements, doFuzzAmount)
+
+				// Ensure results contain the retain tokens
+				if newWord != "" {
+					for value := range retainTokens {
+						if strings.Contains(newWord, value) {
+							fmt.Println(newWord)
+						}
+					}
+				}
+				return true
+			})
+		}(stringWord)
+	}
+	wg.Wait()
+}
+
 // CheckIfArgExists checks an argument at a postion to see if it exists
 //
 // Args:

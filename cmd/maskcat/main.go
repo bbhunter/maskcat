@@ -69,6 +69,10 @@ func main() {
 		cli.CheckIfArgExists(2, os.Args)
 		flagSet.Parse(os.Args[3:])
 		cli.GenerateTokenRetainMasks(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements)
+	case "splice":
+		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
+		cli.GenerateSpliceMutation(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
 	}
 }
 
