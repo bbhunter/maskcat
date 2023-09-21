@@ -13,7 +13,7 @@ import (
 	"github.com/jakewnuk/maskcat/internal/cli"
 )
 
-var version = "2.1.1"
+var version = "2.2.0"
 
 func main() {
 	flagSet := flag.NewFlagSet("maskcat", flag.ExitOnError)
@@ -95,4 +95,6 @@ func printUsage() {
 	fmt.Println("\t\tExample: stdin | maskcat remove [MASK-CHARS] [OPTIONS]")
 	fmt.Println("\n  retain\tCreates retain masks by keeping text from a file")
 	fmt.Println("\t\tExample: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]")
+	fmt.Println("\n  splice\tMutates text by using retain masks and token swapping")
+	fmt.Println("\t\tExample: stdin | maskcat splice [TOKENS-FILE] [OPTIONS]")
 }

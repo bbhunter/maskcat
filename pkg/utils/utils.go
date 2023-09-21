@@ -284,3 +284,90 @@ func TestHexInput(s string) bool {
 	}
 	return true
 }
+
+// CreateRetainMask is used to create retain masks from input and a list of tokens
+//
+// # Retain masks are masks where keywords are prevented from being transformed
+//
+// Args:
+//
+//		stringWord (string): Input string to turn into a retain mask
+//		retainTokens (map[string]struct{}): Tokens that should be kept
+//	 args ([]string): Replacer arguments to use
+//		doMultiByte	(bool): If the function should process multibyte text
+//		doNumberOfReplacements (int): Number of tokens to keep in each string (default 1)
+//
+// Returns:
+//
+//	(string): Mask with any tokens retained
+func CreateRetainMask(stringWord string, retainTokens map[string]struct{}, args []string, doMultiByte bool, doNumberOfReplacements int) string {
+	// Create the retain mask
+	result := []string{stringWord}
+
+	// Iterate on tokens
+	for value := range retainTokens {
+		var temp []string
+
+		// Iterate on item text
+		for _, s := range result {
+			split := strings.Split(s, value)
+
+			// Iterate on exploded string
+			for i, ss := range split {
+				if ss != "" {
+					temp = append(temp, ss)
+				}
+
+				// Check if its the last split string
+				if i != len(split)-1 {
+					temp = append(temp, value)
+				}
+			}
+		}
+		result = temp
+	}
+
+	kept := 0
+	override := false
+	forward := false
+
+	for i, s := range result {
+		if _, ok := retainTokens[s]; !ok || override {
+
+			look := i + 1
+			if look > len(result)-1 {
+				look = len(result) - 1
+			}
+
+			// Limiting fowards to one for now
+			if _, forwardOk := retainTokens[s+result[look]]; forwardOk && forward == false {
+				forward = true
+				continue
+			} else if forward {
+				forward = false
+				kept++
+				continue
+			}
+
+			mask := MakeMask(s, args)
+			if doMultiByte {
+				mask = models.EnsureValidMask(mask)
+			}
+
+			s = mask
+			result[i] = s
+		} else {
+			if forward {
+				forward = false
+			}
+
+			kept++
+			if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
+				override = true
+			}
+		}
+	}
+
+	return strings.Join(result, "")
+
+}

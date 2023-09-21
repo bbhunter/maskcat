@@ -457,73 +457,9 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 		go func(stringWord string) {
 			defer wg.Done()
 
-			result := []string{stringWord}
-
-			// Iterate on tokens
-			for value := range tokens {
-				var temp []string
-
-				// Iterate on item text
-				for _, s := range result {
-					split := strings.Split(s, value)
-
-					// Iterate on exploded string
-					for i, ss := range split {
-						if ss != "" {
-							temp = append(temp, ss)
-						}
-
-						// Check if its the last split string
-						if i != len(split)-1 {
-							temp = append(temp, value)
-						}
-					}
-				}
-				result = temp
-			}
-
-			kept := 0
-			override := false
-			forward := false
-
-			for i, s := range result {
-				if _, ok := tokens[s]; !ok || override {
-
-					look := i + 1
-					if look > len(result)-1 {
-						look = len(result) - 1
-					}
-
-					// Limiting fowards to one for now
-					if _, forwardOk := tokens[s+result[look]]; forwardOk && forward == false {
-						forward = true
-						continue
-					} else if forward {
-						forward = false
-						kept++
-						continue
-					}
-
-					mask := utils.MakeMask(s, args)
-					if doMultiByte {
-						mask = models.EnsureValidMask(mask)
-					}
-
-					s = mask
-					result[i] = s
-				} else {
-					if forward {
-						forward = false
-					}
-
-					kept++
-					if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
-						override = true
-					}
-				}
-			}
-
-			fmt.Println(strings.Join(result, ""))
+			// Create the retain mask
+			mask := utils.CreateRetainMask(stringWord, tokens, args, doMultiByte, doNumberOfReplacements)
+			fmt.Println(mask)
 
 		}(stringWord)
 	}
@@ -531,17 +467,15 @@ func GenerateTokenRetainMasks(stdIn *bufio.Scanner, infile string, doMultiByte b
 }
 
 // GenerateSpliceMutation performs mutation mode on retain masks
-// TODO Document and add to CLI
-// TODO Consider making a retain mask function to remove dupe code
 //
 // Args:
 //
-//		stdIn (*bufio.Scanner): Buffer of standard input
-//	 infile (string): File path of input file to use
-//		doMultiByte (bool): If multibyte text should be processed
-//		doDeHex (bool): If $HEX[...] text should be processed
-//		doNumberOfReplacements (int): Max number of times to replace per string
-//		doFuzzAmount(int): Number of additional fuzz characters to add to replacer
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	infile (string): File path of input file to use
+//	doMultiByte (bool): If multibyte text should be processed
+//	doDeHex (bool): If $HEX[...] text should be processed
+//	doNumberOfReplacements (int): Max number of times to replace per string
+//	doFuzzAmount(int): Number of additional fuzz characters to add to replacer
 //
 // Returns:
 //
@@ -606,73 +540,7 @@ func GenerateSpliceMutation(stdIn *bufio.Scanner, infile string, doMultiByte boo
 			defer wg.Done()
 
 			// Create the retain mask
-			result := []string{stringWord}
-
-			// Iterate on tokens
-			for value := range retainTokens {
-				var temp []string
-
-				// Iterate on item text
-				for _, s := range result {
-					split := strings.Split(s, value)
-
-					// Iterate on exploded string
-					for i, ss := range split {
-						if ss != "" {
-							temp = append(temp, ss)
-						}
-
-						// Check if its the last split string
-						if i != len(split)-1 {
-							temp = append(temp, value)
-						}
-					}
-				}
-				result = temp
-			}
-
-			kept := 0
-			override := false
-			forward := false
-
-			for i, s := range result {
-				if _, ok := retainTokens[s]; !ok || override {
-
-					look := i + 1
-					if look > len(result)-1 {
-						look = len(result) - 1
-					}
-
-					// Limiting fowards to one for now
-					if _, forwardOk := retainTokens[s+result[look]]; forwardOk && forward == false {
-						forward = true
-						continue
-					} else if forward {
-						forward = false
-						kept++
-						continue
-					}
-
-					mask := utils.MakeMask(s, args)
-					if doMultiByte {
-						mask = models.EnsureValidMask(mask)
-					}
-
-					s = mask
-					result[i] = s
-				} else {
-					if forward {
-						forward = false
-					}
-
-					kept++
-					if kept >= doNumberOfReplacements && doNumberOfReplacements != 0 {
-						override = true
-					}
-				}
-			}
-
-			mask := strings.Join(result, "")
+			mask := utils.CreateRetainMask(stringWord, retainTokens, args, doMultiByte, doNumberOfReplacements)
 
 			// Use the retain mask in mutation
 			tokens.Range(func(key, value interface{}) bool {

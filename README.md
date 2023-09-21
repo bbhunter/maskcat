@@ -10,6 +10,7 @@ Maskcat (`cat` mask) focuses on the usage of masks to extract and transform text
    - Creating partial masks from `stdin` by selecting character sets
    - Removing characters from `stdin` by selecting character sets
    - Creating retain masks from `stdin` by selecting tokens to retain
+   - Mutating `stdin` with retain masks for new candidates that retain tokens
 
 Maskcat also supports several options to assist in being a flexible and powerful tool:
 
@@ -33,6 +34,7 @@ Usage information and other documentation can be found below:
     - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/blob/main/docs/SWAP_AND_MUTATE.md)
     - [Generating Tokens and Retain Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_AND_RETAIN.md)
     - [Partial Masks and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/PARTIAL_AND_REMOVE.md)
+    - [Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE.md)
 
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/) (external link)
@@ -42,10 +44,10 @@ Usage information and other documentation can be found below:
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
 ```
 
-### Current Version 2.1.1:
+### Current Version 2.2.0:
 
 ```
-Options for maskcat (version 2.1.1):
+Options for maskcat (version 2.2.0):
 
   -d    Process $HEX[...] text (warning: slows processes)
         Example: maskcat [MODE] -d
@@ -60,7 +62,7 @@ Options for maskcat (version 2.1.1):
   -v    Show verbose information about masks
         Example: maskcat [MODE] -v
 
-Modes for maskcat (version 2.1.1):
+Modes for maskcat (version 2.2.0):
 
   mask          Creates masks from text
                 Example: stdin | maskcat mask [OPTIONS]
@@ -85,4 +87,7 @@ Modes for maskcat (version 2.1.1):
 
   retain        Creates retain masks by keeping text from a file
                 Example: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]
+
+  splice        Mutates text by using retain masks and token swapping
+                Example: stdin | maskcat splice [TOKENS-FILE] [OPTIONS]
 ```
