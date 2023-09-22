@@ -203,7 +203,7 @@ func MutateMasks(stdIn *bufio.Scanner, chunkSizeStr string, doMultiByte bool, do
 		CheckError(err)
 
 		for _, token := range ngrams {
-			if len(token) == chunksInt {
+			if len(token) >= chunksInt {
 				tokens.Store(token, struct{}{})
 			}
 		}

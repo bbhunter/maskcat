@@ -86,7 +86,7 @@ func printUsage() {
 	fmt.Println("\n  sub\t\tReplaces text with text from a file with masks")
 	fmt.Println("\t\tExample: stdin | maskcat sub [TOKENS-FILE] [OPTIONS]")
 	fmt.Println("\n  mutate\tMutates text by using chunking and token swapping")
-	fmt.Println("\t\tExample: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]")
+	fmt.Println("\t\tExample: stdin | maskcat mutate [MIN-TOKEN-SIZE] [OPTIONS]")
 	fmt.Println("\n  tokens\tSplits text into tokens and only print certain lengths (values over 99 allow all)")
 	fmt.Println("\t\tExample: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]")
 	fmt.Println("\n  partial\tPartially replaces characters with mask characters")

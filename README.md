@@ -74,7 +74,7 @@ Modes for maskcat (version 2.2.0):
                 Example: stdin | maskcat sub [TOKENS-FILE] [OPTIONS]
 
   mutate        Mutates text by using chunking and token swapping
-                Example: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]
+                Example: stdin | maskcat mutate [MIN-TOKEN-SIZE] [OPTIONS]
 
   tokens        Splits text into tokens and only print certain lengths (values over 99 allow all)
                 Example: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]

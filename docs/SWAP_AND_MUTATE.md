@@ -80,13 +80,13 @@ bello world
 ### Mutating Text
 Maskcat can be used to mutate text from `stdin` by parsing items from `stdin`
 and inserting them into future items. This will transform strings by shuffling
-tokens within them. If the token length matches the input length then it is
+tokens within them. If the token length is greater than or equal to the input length then it is
 kept otherwise discarded and not used for swapping.
 
 This is often used to rapidly create new candidates based on material.
 
 ```
-Example: stdin | maskcat mutate [CHUNK-SIZE] [OPTIONS]
+Example: stdin | maskcat mutate [MIN-TOKEN-SIZE] [OPTIONS]
 ```
 
 The `mutate` mode is affected by the following option flags:
