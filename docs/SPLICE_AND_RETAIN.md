@@ -33,14 +33,6 @@ test
 works
 123
 ```
-Make tokens of length X
-```
-$ cat test.txt | maskcat tokens 3
-isa
-big
-old
-luv
-```
 Make retain masks from file input
 ```
 $ cat test.txt | maskcat retain retain.txt
