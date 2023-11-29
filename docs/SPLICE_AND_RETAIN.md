@@ -4,6 +4,24 @@ File examples used
 $ cat test.txt
 this
 is a
+Test!
+love
+Testing
+Work$
+
+$ cat retain.txt
+Test
+```
+Create spliced text
+```
+$ cat test.txt | maskcat splice retain.txt
+Test$
+```
+File examples used
+```
+$ cat test.txt
+this
+is a
 big old test
 luvTesting
 it123always
@@ -34,31 +52,28 @@ this
 ?l?l?l?u?l?l?l?l?l?l
 ```
 
-### Making Tokens
-Maskcat can be used to create tokens of X length from `stdin` based on multiple
-parsing methods. This will parse out tokens from input strings into smaller
-alphabetical substrings that can be used with other modes.
+### Splicing Text
+Maskcat can be used to "splice" text from `stdin` by parsing items from `stdin`
+and inserting them into future items by using retain masks. This will transform
+strings by shuffling tokens within them but also preserving content provided in
+a file. 
 
-This is used to identify trends and patterns in material for other use cases.
+This combines the `mutate` and `retain` mode into a single function to create 
+token swapped text but ensuring certain tokens are not swapped and contained
+within the results. 
+
+The `splice` mode will use the tokenizer logic from the `tokens` mode to
+generate substrings to use in the mutation logic.
 
 ```
-Example: stdin | maskcat tokens [TOKEN-LEN] [OPTIONS]
+Example: stdin | maskcat splice [TOKENS-FILE] [OPTIONS]
 ```
 
-The `tokens` mode is affected by the following option flags:
+The `splice` mode is affected by the following option flags:
+- `-m` to process multibyte text
 - `-d` to process `$HEX[...]` text
-
-When the `TOKEN-LEN` value is above 99 all tokens are allowed through. The
-tokenizer can parse the following items:
- - Parses out camel case
- - Parses out digit boundaries
- - Parses out special characters boundaries
- - Parses out non-alpha characters
-
-The following regex are used to do this:
- - `[A-Z][a-z]*|\d+|[^\dA-Z]+`
- - `[A-Z][a-z]*|\d+|\W+|\w+`
- - `[^a-zA-Z]+`
+- `-n` to control the max number of replacements per string
+- `-f` to control the amount of extra fuzz to add to the replacements
 
 ### Making Retain Masks
 Maskcat can be used to create retain masks from `stdin` by creating masks

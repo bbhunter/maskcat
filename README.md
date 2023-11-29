@@ -31,9 +31,9 @@ Usage information and other documentation can be found below:
 - Usage documentation:
     - [Creating and Matching Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/CREATE_AND_MATCH.md)
     - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/blob/main/docs/SWAP_AND_MUTATE.md)
-    - [Generating Tokens and Retain Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_AND_RETAIN.md)
+    - [Generating Tokens](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS.md)
     - [Partial Masks and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/PARTIAL_AND_REMOVE.md)
-    - [Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE.md)
+    - [Retain Masks and Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE_AND_RETAIN.md)
 
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/) (external link)

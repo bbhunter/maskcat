@@ -96,4 +96,16 @@ The `mutate` mode is affected by the following option flags:
 - `-f` to control the amount of extra fuzz to add to the replacements
 
 The `mutate` mode will use the tokenizer logic from the `tokens` mode to
-generate substrings to use in the mutation logic.
+generate substrings to use in the mutation logic. The `mutate` mode is non-deterministic by design
+this means that it will not generate identical output for the same input.
+
+When `mutate` is used the items are being read one-by-one from standard input and goes through the following steps at a high level:
+- Parse text for ngrams/tokens and add them to the map
+- Iterate over the map of tokens and perform swaps on possible tokens
+
+For example, if "Test123" goes in and the ngram "Test" is pulled out and added to the map. Next, "Work345" is entered and the token "Work" is pulled out and added to the map.
+When it comes time for the candidates to be made for "Work345" the map contains "Test" and "Work" making the possible options "Test345" and "Work345".
+However, if the order was reversed and "Work345" was processed first and "Test123" was processed after then "Work123" and "Test123" would be the output.
+
+Once the program is started, the map begins to fill with different items and depending on the order in which they are processed the output could be different.
+This can also be multiplied by using the `shuf` command to mix up in the input and goroutines will also process items in a different order due to the multiple "threads" being used.
