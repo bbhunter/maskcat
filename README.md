@@ -31,7 +31,7 @@ Usage information and other documentation can be found below:
 - Usage documentation:
     - [Creating and Matching Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/CREATE_AND_MATCH.md)
     - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/blob/main/docs/SWAP_AND_MUTATE.md)
-    - [Generating Tokens](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS.md)
+    - [Generating Tokens](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_AND_FILTER.md)
     - [Partial Masks and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/PARTIAL_AND_REMOVE.md)
     - [Retain Masks and Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE_AND_RETAIN.md)
 
@@ -43,10 +43,10 @@ Usage information and other documentation can be found below:
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
 ```
 
-### Current Version 2.2.0:
+### Current Version 2.3.0:
 
 ```
-Options for maskcat (version 2.2.0):
+Options for maskcat (version 2.3.0):
 
   -d    Process $HEX[...] text (warning: slows processes)
         Example: maskcat [MODE] -d
@@ -61,7 +61,7 @@ Options for maskcat (version 2.2.0):
   -v    Show verbose information about masks
         Example: maskcat [MODE] -v
 
-Modes for maskcat (version 2.2.0):
+Modes for maskcat (version 2.3.0):
 
   mask          Creates masks from text
                 Example: stdin | maskcat mask [OPTIONS]
@@ -89,4 +89,7 @@ Modes for maskcat (version 2.2.0):
 
   splice        Mutates text by using retain masks and token swapping
                 Example: stdin | maskcat splice [TOKENS-FILE] [OPTIONS]
+
+  filter        Only prints masks below a maximum entropy threshold
+                Example: stdin | maskcat filter [ENTROPY-MAX] [OPTIONS]
 ```

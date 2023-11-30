@@ -17,6 +17,17 @@ big
 old
 luv
 ```
+Filter and print masks with entropy value less than 100
+```
+$ cat test.txt | maskcat partial d | maskcat entropy 100 -v
+it?d?d?dalways:10
+```
+```
+$ cat test.txt | maskcat partial ds | maskcat entropy 100 -v
+is?sa:5
+big?sold?stest:10
+it?d?d?dalways:10
+```
 
 ### Making Tokens
 Maskcat can be used to create tokens of X length from `stdin` based on multiple
@@ -44,3 +55,18 @@ The following regex are used to do this:
  - `[A-Z][a-z]*|\d+|\W+|\w+`
  - `[^a-zA-Z]+`
 
+### Filtering Masks by Entropy
+Maskcat can be used to filter masks from `stdin` that are greater than a target
+entropy value. This will only print items to `stdout` that are below the target
+threshold. 
+
+This is used to remove large masks from output that will not be feasible with
+mask attacks. The `entropy` mode can use both full and partial masks.
+
+```
+Example: stdin | maskcat entropy [ENTROPY-MAX] [OPTIONS]
+```
+
+The `entropy` mode is affected by the following option flags:
+- `-d` to process `$HEX[...]` text
+- `-v` to print the entropy value of each item

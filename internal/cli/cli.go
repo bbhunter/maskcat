@@ -561,6 +561,50 @@ func GenerateSpliceMutation(stdIn *bufio.Scanner, infile string, doMultiByte boo
 	wg.Wait()
 }
 
+// CalculateEntropy calculates the entropy of the input strings and only prints
+// those below the threshold
+//
+// Args:
+//
+//	stdIn (*bufio.Scanner): Buffer of standard input
+//	threshold (string): Threshold to use for entropy
+//	doDeHex (bool): If $HEX[...] text should be processed
+//	verbose (bool): If verbose stdText should be printed about masks
+//
+// Returns:
+//
+//	None
+func CalculateEntropy(stdIn *bufio.Scanner, threshold string, doDeHex bool, verbose bool) {
+	if models.IsStringInt(threshold) == false {
+		CheckError(errors.New("Invalid Chunk Size"))
+	}
+	thresholdInt, err := strconv.Atoi(threshold)
+	CheckError(err)
+
+	stdText := ""
+	for stdIn.Scan() {
+
+		if utils.TestHexInput(stdIn.Text()) == true && doDeHex == true {
+			plaintext, err := utils.DehexPlaintext(stdIn.Text())
+			if err != nil {
+				stdText = ""
+			}
+			stdText = plaintext
+		} else {
+			stdText = stdIn.Text()
+		}
+
+		entropy := utils.TestEntropy(stdText)
+		if entropy < thresholdInt && entropy != 0 {
+			if verbose {
+				fmt.Printf("%s:%d\n", stdText, entropy)
+			} else {
+				fmt.Printf("%s\n", stdText)
+			}
+		}
+	}
+}
+
 // CheckIfArgExists checks an argument at a postion to see if it exists
 //
 // Args:

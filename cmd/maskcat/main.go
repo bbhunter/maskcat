@@ -13,7 +13,7 @@ import (
 	"github.com/jakewnuk/maskcat/internal/cli"
 )
 
-var version = "2.2.0"
+var version = "2.3.0"
 
 func main() {
 	flagSet := flag.NewFlagSet("maskcat", flag.ExitOnError)
@@ -73,6 +73,10 @@ func main() {
 		cli.CheckIfArgExists(2, os.Args)
 		flagSet.Parse(os.Args[3:])
 		cli.GenerateSpliceMutation(stdIn, os.Args[2], *doMultiByte, *doDeHex, *doNumberOfReplacements, *doFuzzAmount)
+	case "filter":
+		cli.CheckIfArgExists(2, os.Args)
+		flagSet.Parse(os.Args[3:])
+		cli.CalculateEntropy(stdIn, os.Args[2], *doMultiByte, *doVerbose)
 	}
 }
 
@@ -97,4 +101,6 @@ func printUsage() {
 	fmt.Println("\t\tExample: stdin | maskcat retain [TOKENS-FILE] [OPTIONS]")
 	fmt.Println("\n  splice\tMutates text by using retain masks and token swapping")
 	fmt.Println("\t\tExample: stdin | maskcat splice [TOKENS-FILE] [OPTIONS]")
+	fmt.Println("\n  filter\tOnly prints masks below a maximum entropy threshold")
+	fmt.Println("\t\tExample: stdin | maskcat filter [ENTROPY-MAX] [OPTIONS]")
 }

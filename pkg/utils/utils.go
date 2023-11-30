@@ -8,6 +8,7 @@ package utils
 
 import (
 	"encoding/hex"
+	"math"
 	"os"
 	"regexp"
 	"strings"
@@ -158,10 +159,10 @@ func TestComplexity(str string) int {
 //
 //	(int): Entropy score as an integer
 func TestEntropy(str string) int {
-	entropy := 0
+	entropy := 0.0
 	charTypes := []struct {
 		charType string
-		count    int
+		count    float64
 	}{
 		{"?u", 26},
 		{"?l", 26},
@@ -169,10 +170,16 @@ func TestEntropy(str string) int {
 		{"?s", 33},
 		{"?b", 256},
 	}
+
+	// Calculate the entropy
 	for _, ct := range charTypes {
-		entropy += strings.Count(str, ct.charType) * ct.count
+		count := strings.Count(str, ct.charType)
+		if count > 0 {
+			entropy += float64(count) * math.Log2(ct.count)
+		}
 	}
-	return entropy
+
+	return int(math.Round(entropy))
 }
 
 // ReplaceAtIndex replaces a rune at index in string
