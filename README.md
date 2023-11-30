@@ -11,6 +11,7 @@ Maskcat (`cat` mask) focuses on the usage of masks to extract and transform text
    - Removing characters from `stdin` by selecting character sets
    - Creating retain masks from `stdin` by selecting tokens to retain
    - Mutating `stdin` with retain masks for new candidates that retain tokens
+   - Filtering `stdin` for masks that are below an entropy threshold
 
 Maskcat also supports several options to assist in being a flexible and powerful tool:
 
@@ -31,7 +32,7 @@ Usage information and other documentation can be found below:
 - Usage documentation:
     - [Creating and Matching Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/CREATE_AND_MATCH.md)
     - [Token Swapping and Mutation](https://github.com/JakeWnuk/maskcat/blob/main/docs/SWAP_AND_MUTATE.md)
-    - [Generating Tokens](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_AND_FILTER.md)
+    - [Generating Tokens and Filtering Masks](https://github.com/JakeWnuk/maskcat/blob/main/docs/TOKENS_AND_FILTER.md)
     - [Partial Masks and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/PARTIAL_AND_REMOVE.md)
     - [Retain Masks and Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE_AND_RETAIN.md)
 
