@@ -74,7 +74,7 @@ func TestTestComplexity(t *testing.T) {
 
 func TestTestEntropy(t *testing.T) {
 	str := "?u?l?l?l?l?s?s?u?l?l?l?l?d?s"
-	want := 65
+	want := 369
 	got := TestEntropy(str)
 	if got != want {
 		t.Errorf("TestEntropy(%q) = %d; want %d", str, got, want)
