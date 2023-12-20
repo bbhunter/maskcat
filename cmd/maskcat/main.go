@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jakewnuk/maskcat/internal/cli"
+	"github.com/jakewnuk/maskcat/v2/internal/cli"
 )
 
 var version = "2.3.0"
