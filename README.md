@@ -39,15 +39,20 @@ Usage information and other documentation can be found below:
 - For more application examples:
     - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/) (external link)
 
+### Install from Go
+```
+go install github.com/jakewnuk/maskcat@v0.0.1
+```
+
 ### Install from Source
 ```
-git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./cmd/maskcat && mv ./maskcat ~/go/bin/
+git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./main.go && mv ./main ~/go/bin/maskcat
 ```
 
-### Current Version 2.3.0:
+### Current Version 0.0.1:
 
 ```
-Options for maskcat (version 2.3.0):
+Options for maskcat (version 0.0.1):
 
   -d    Process $HEX[...] text (warning: slows processes)
         Example: maskcat [MODE] -d
@@ -62,7 +67,7 @@ Options for maskcat (version 2.3.0):
   -v    Show verbose information about masks
         Example: maskcat [MODE] -v
 
-Modes for maskcat (version 2.3.0):
+Modes for maskcat (version 0.0.1):
 
   mask          Creates masks from text
                 Example: stdin | maskcat mask [OPTIONS]
@@ -94,3 +99,4 @@ Modes for maskcat (version 2.3.0):
   filter        Only prints masks below a maximum entropy threshold
                 Example: stdin | maskcat filter [ENTROPY-MAX] [OPTIONS]
 ```
+
