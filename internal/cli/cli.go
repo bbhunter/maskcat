@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/jakewnuk/maskcat/v2/pkg/models"
-	"github.com/jakewnuk/maskcat/v2/pkg/utils"
+	"github.com/jakewnuk/maskcat/pkg/models"
+	"github.com/jakewnuk/maskcat/pkg/utils"
 )
 
 // MatchMasks reads masks from a file and prints any input strings that match one of the masks

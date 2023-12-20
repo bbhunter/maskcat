@@ -13,7 +13,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/jakewnuk/maskcat/v2/pkg/models"
+	"github.com/jakewnuk/maskcat/pkg/models"
 )
 
 // ConstructReplacements create an array mapping which characters to replace
