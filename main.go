@@ -13,7 +13,7 @@ import (
 	"github.com/jakewnuk/maskcat/internal/cli"
 )
 
-var version = "0.0.1"
+var version = "1.2.0"
 
 func main() {
 	flagSet := flag.NewFlagSet("maskcat", flag.ExitOnError)

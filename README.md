@@ -24,7 +24,6 @@ Maskcat fits into a small tool ecosystem for password cracking and is designed f
 
 - [maskcat](https://github.com/JakeWnuk/maskcat)
 - [rulecat](https://github.com/JakeWnuk/rulecat)
-- [mode](https://github.com/JakeWnuk/mode)
 
 ### Getting Started
 
@@ -37,12 +36,12 @@ Usage information and other documentation can be found below:
     - [Partial Masks and Removing Character Sets](https://github.com/JakeWnuk/maskcat/blob/main/docs/PARTIAL_AND_REMOVE.md)
     - [Retain Masks and Splicing Token Swapping](https://github.com/JakeWnuk/maskcat/blob/main/docs/SPLICE_AND_RETAIN.md)
 
-- For more application examples:
-    - [Maskcat Examples](https://jakewnuk.com/posts/advanced-maskcat-cracking-guide/) (external link)
-
 ### Install from Go
 ```
-go install github.com/jakewnuk/maskcat@v0.0.1
+go install github.com/jakewnuk/maskcat@latest
+```
+```
+go install github.com/jakewnuk/maskcat@v1.2.0
 ```
 
 ### Install from Source
@@ -50,10 +49,10 @@ go install github.com/jakewnuk/maskcat@v0.0.1
 git clone https://github.com/JakeWnuk/maskcat && cd maskcat && go build ./main.go && mv ./main ~/go/bin/maskcat
 ```
 
-### Current Version 0.0.1:
+### Current Version 1.2.0:
 
 ```
-Options for maskcat (version 0.0.1):
+Options for maskcat (version 1.2.0):
 
   -d    Process $HEX[...] text (warning: slows processes)
         Example: maskcat [MODE] -d
@@ -68,7 +67,7 @@ Options for maskcat (version 0.0.1):
   -v    Show verbose information about masks
         Example: maskcat [MODE] -v
 
-Modes for maskcat (version 0.0.1):
+Modes for maskcat (version 1.2.0):
 
   mask          Creates masks from text
                 Example: stdin | maskcat mask [OPTIONS]
